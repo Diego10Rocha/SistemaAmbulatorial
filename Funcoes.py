@@ -1,79 +1,78 @@
-def gerarSenha(tipo, consultorio, contadorcomum, contadorpreferencial):
-    #pacienteComum=[]
-    #pacientePrioritario=[]
-
+#Esta função foi criada para gerar senhas para os pacientes por ordem de chegada
+def gerarSenha(tipo, consultorio, contadorcomumDermatologia, contadorcomumEndocrinologia, contadorcomumOrtopedia, contadorpreferencialDermatologia, contadorpreferencialEndocrinologia, contadorpreferencialOrtopedia):
+  
     if(tipo=="C" or tipo=="c"):
         if(consultorio=="d" or consultorio=="D"):
-            if(contadorcomum<10):
-                senha="cd00"+str(contadorcomum)
-                #pacienteComum.append()
-            elif(contadorcomum>=10 and contadorcomum<100):
-                senha="cd0"+str(contadorcomum)
-                #pacienteComum.append()
-            elif(contadorcomum>=100):
-                senha="cd"+str(contadorcomum)
-                #pacienteComum.append()
+            if(contadorcomumDermatologia<10):
+                senha="cd00"+str(contadorcomumDermatologia)
+                
+            elif(contadorcomumDermatologia>=10 and contadorcomumDermatologia<100):
+                senha="cd0"+str(contadorcomumDermatologia)
+                
+            elif(contadorcomumDermatologia>=100):
+                senha="cd"+str(contadorcomumDermatologia)
+                
         elif(consultorio=="E" or consultorio=="e"):
-            if(contadorcomum<10):
-                senha="ce00"+str(contadorcomum)
-                #pacienteComum.append()
-            elif(contadorcomum>=10 and contadorcomum<100):
-                senha="ce0"+str(contadorcomum)
-                #pacienteComum.append()
-            elif(contadorcomum>=100):
-                senha="ce"+str(contadorcomum)
-                #pacienteComum.append()
+            if(contadorcomumEndocrinologia<10):
+                senha="ce00"+str(contadorcomumEndocrinologia)
+                
+            elif(contadorcomumEndocrinologia>=10 and contadorcomumEndocrinologia<100):
+                senha="ce0"+str(contadorcomumEndocrinologia)
+               
+            elif(contadorcomumEndocrinologia>=100):
+                senha="ce"+str(contadorcomumEndocrinologia)
+                
         elif(consultorio=="O" or consultorio=="o"):
-            if(contadorcomum<10):
-                senha="ce00"+str(contadorcomum)
-                #pacienteComum.append()
-            elif(contadorcomum>=10 and contadorcomum<100):
-                senha="ce0"+str(contadorcomum)
-                #pacienteComum.append()
-            elif(contadorcomum>=100):
-                senha="ce"+str(contadorcomum)
-                #pacienteComum.append()
-        contadorcomum+=1
+            if(contadorcomumOrtopedia<10):
+                senha="co00"+str(contadorcomumOrtopedia)
+                
+            elif(contadorcomumOrtopedia>=10 and contadorcomumOrtopedia<100):
+                senha="co0"+str(contadorcomumOrtopedia)
+                
+            elif(contadorcomumOrtopedia>=100):
+                senha="co"+str(contadorcomumOrtopedia)
+               
     else:
         if(consultorio=="d" or consultorio=="D"):
-            if(contadorpreferencial<10):
-                senha="pd00"+str(contadorpreferencial)
-                #pacientePrioritario.append()
-            elif(contadorpreferencial>=10 and contadorpreferencial<100):
-                senha="pd0"+str(contadorpreferencial)
-                #pacientePrioritario.append()
-            elif(contadorpreferencial>=100):
-                senha="pd"+str(contadorpreferencial)
-                #pacientePrioritario.append()
+            if(contadorpreferencialDermatologia<10):
+                senha="pd00"+str(contadorpreferencialDermatologia)
+               
+            elif(contadorpreferencialDermatologia>=10 and contadorpreferencialDermatologia<100):
+                senha="pd0"+str(contadorpreferencialDermatologia)
+                
+            elif(contadorpreferencialDermatologia>=100):
+                senha="pd"+str(contadorpreferencialDermatologia)
+                
         elif(consultorio=="E" or consultorio=="e"):
-            if(contadorpreferencial<10):
-                senha="pe00"+str(contadorpreferencial)
-                #pacientePrioritario.append()
-            elif(contadorpreferencial>=10 and contadorpreferencial<100):
-                senha="pe0"+str(contadorpreferencial)
-                #pacientePrioritario.append()
-            elif(contadorpreferencial>=100):
-                senha="pe"+str(contadorpreferencial)
-                #pacientePrioritario.append()
+            if(contadorpreferencialEndocrinologia<10):
+                senha="pe00"+str(contadorpreferencialEndocrinologia)
+                
+            elif(contadorpreferencialEndocrinologia>=10 and contadorpreferencialEndocrinologia<100):
+                senha="pe0"+str(contadorpreferencialEndocrinologia)
+                
+            elif(contadorpreferencialEndocrinologia>=100):
+                senha="pe"+str(contadorpreferencialEndocrinologia)
+                
         elif(consultorio=="O" or consultorio=="o"):
-            if(contadorpreferencial<10):
-                senha="pe00"+str(contadorpreferencial)
-                #pacientePrioritario.append()
-            elif(contadorpreferencial>=10 and contadorpreferencial<100):
-                senha="pe0"+str(contadorpreferencial)
-                #pacientePrioritario.append()
-            elif(contadorpreferencial>=100):
-                senha="pe"+str(contadorpreferencial)
-                #pacientePrioritario.append()
-        contadorpreferencial+=1
+            if(contadorpreferencialOrtopedia<10):
+                senha="po00"+str(contadorpreferencialOrtopedia)
+                
+            elif(contadorpreferencialOrtopedia>=10 and contadorpreferencialOrtopedia<100):
+                senha="po0"+str(contadorpreferencialOrtopedia)
+
+            elif(contadorpreferencialOrtopedia>=100):
+                senha="po"+str(contadorpreferencialOrtopedia)
+               
     return senha
 
+#Esta função serve para verificar se um valor digitado é composto apenas por numeros
 def VerificarInt(valor):
     if(valor.isdigit()):
         return True
     else:
       return False
 
+#Esta função serve para validar a hora, visto que tem que ser um valor inteiro e estar no intervalo de 0 a 24
 def ValidarHora(boolhora, hora):
     boolh=False
     while True:
@@ -94,6 +93,7 @@ def ValidarHora(boolhora, hora):
             boolhora=VerificarInt(hora)
     return hora
 
+#Esta função serve para validar o minuto da hora, visto que tem que ser um valor inteiro e estar no intervalo de 0 a 60
 def ValidarMinuto(boolminuto, minuto):
     boolm=False
     while True:
@@ -114,11 +114,12 @@ def ValidarMinuto(boolminuto, minuto):
             boolminuto=VerificarInt(minuto)
     return minuto
 
+#Esta função serve para validar a opção de entrada do menu, visto que tem que ser um valor inteiro e estar no intervalo de 1 a 9
 def ValidarOpcao(boolOpcao, opcao):
     boolo=False
     while True:
-        opcao=int(opcao)
         while(boolOpcao):
+            opcao=int(opcao)
             if(opcao<0 and opcao>9):
                 MENU()
                 opcao=input("Digite uma opção válida\n")
@@ -134,6 +135,7 @@ def ValidarOpcao(boolOpcao, opcao):
             boolOpcao=VerificarInt(opcao)
     return opcao
 
+#Esta função serve para imprimir o menu
 def MENU():
 
     print("##########################################################")
@@ -150,7 +152,7 @@ def MENU():
     print("#  [9] - Encerrar programa                               #")
     print("##########################################################")
 
-def EmitirSenha(contadorComum, contadorPreferencial):
+def EmitirSenha(contadorcomumDermatologia, contadorcomumEndocrinologia, contadorcomumOrtopedia, contadorpreferencialDermatologia, contadorpreferencialEndocrinologia, contadorpreferencialOrtopedia):
 
     #pacienteComum=[]
     #pacientePrioritario=[]
@@ -176,8 +178,8 @@ def EmitirSenha(contadorComum, contadorPreferencial):
                      "D - Dermatologia\n"
                      "E - Endocrinologia\n"
                      "O - Ortopedia\n")
-    senha=gerarSenha(tipo, consultorio, contadorComum, contadorPreferencial)
-    return (tipo, nome, hora, minuto, consultorio, senha)
+    senha=gerarSenha(tipo, consultorio, contadorcomumDermatologia, contadorcomumEndocrinologia, contadorcomumOrtopedia, contadorpreferencialDermatologia, contadorpreferencialEndocrinologia, contadorpreferencialOrtopedia)
+    return [tipo, nome, hora, minuto, consultorio, senha]
 
 
 

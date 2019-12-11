@@ -1,23 +1,66 @@
 from Funcoes import *;
+
 opcao=0
-contadorcomum=1
-contadorpreferencial=1
-listaPacienteComum=[]
-listaPacientePrioritario=[]
+contadorcomumDermatologia=1
+contadorpreferencialDermatologia=1
+
+contadorcomumEndocrinologia=1
+contadorpreferencialEndocrinologia=1
+
+contadorcomumOrtopedia=1
+contadorpreferencialOrtopedia=1
+
+listaPacienteComumDermatologia=[]
+listaPacientePrioritarioDermatologia=[]
+
+listaPacienteComumEndocrinologia=[]
+listaPacientePrioritarioEndocrinologia=[]
+
+listaPacienteComumOrtopedia=[]
+listaPacientePrioritarioOrtopedia=[]
+
+
 while(opcao!=9):
     MENU()
     opcao=input("Escolha uma opção\n")
     boolOpcao=VerificarInt(opcao)
     opcao=ValidarOpcao(boolOpcao, opcao)
+
     if(opcao==1):
-        pacientes=(EmitirSenha(contadorcomum, contadorpreferencial))
+        pacientes=[EmitirSenha(contadorcomumDermatologia, contadorcomumEndocrinologia, contadorcomumOrtopedia, contadorpreferencialDermatologia, contadorpreferencialEndocrinologia, contadorpreferencialOrtopedia)]
+
         if(pacientes[0]=="c" or pacientes[0]=="C"):
-            listaPacienteComum.append(pacientes)
-            contadorcomum+=1
+
+            if(pacientes[0][4]=="d" or pacientes[0][4]=="D"):
+              listaPacienteComumDermatologia.append(pacientes)
+              contadorcomumDermatologia+=1
+            elif(pacientes[0][4]=="e" or pacientes[0][4]=="E"):
+              listaPacienteComumEndocrinologia.append(pacientes)
+              contadorcomumEndocrinologia+=1
+            elif(pacientes[0][4]=="O" or pacientes[0][4]=="o"):
+              listaPacienteComumOrtopedia.append(pacientes)
+              contadorcomumOrtopedia+=1
+
         elif(pacientes[0]=="p" or pacientes[0]=="P"):
-            listaPacientePrioritario.append(pacientes)
-            contadorpreferencial+=1
-        print(listaPacienteComum)
+            if(pacientes[0][4]=="d" or pacientes[0][4]=="D"):
+              listaPacientePrioritarioDermatologia.append(pacientes)
+              contadorpreferencialDermatologia+=1
+            elif(pacientes[0][4]=="e" or pacientes[0][4]=="E"):
+              listaPacientePrioritarioEndocrinologia.append(pacientes)
+              contadorpreferencialEndocrinologia+=1
+            elif(pacientes[0][4]=="O" or pacientes[0][4]=="o"):
+              listaPacientePrioritarioOrtopedia.append(pacientes)
+              contadorpreferencialOrtopedia+=1
+
+        
+        print(listaPacienteComumDermatologia)
+        print(listaPacienteComumEndocrinologia)
+        print(listaPacienteComumEndocrinologia)
+
+        print(listaPacientePrioritarioDermatologia)
+        print(listaPacientePrioritarioEndocrinologia)
+        print(listaPacientePrioritarioOrtopedia)
+
     elif(opcao==2):
         ChamarPacienteParaAtendimento()
     elif(opcao==3):
