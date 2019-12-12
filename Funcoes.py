@@ -1,68 +1,68 @@
 #Esta função foi criada para gerar senhas para os pacientes por ordem de chegada
 def gerarSenha(tipo, consultorio, contadorcomumDermatologia, contadorcomumEndocrinologia, contadorcomumOrtopedia, contadorpreferencialDermatologia, contadorpreferencialEndocrinologia, contadorpreferencialOrtopedia):
-  
+
     if(tipo=="C" or tipo=="c"):
         if(consultorio=="d" or consultorio=="D"):
             if(contadorcomumDermatologia<10):
                 senha="cd00"+str(contadorcomumDermatologia)
-                
+
             elif(contadorcomumDermatologia>=10 and contadorcomumDermatologia<100):
                 senha="cd0"+str(contadorcomumDermatologia)
-                
+
             elif(contadorcomumDermatologia>=100):
                 senha="cd"+str(contadorcomumDermatologia)
-                
+
         elif(consultorio=="E" or consultorio=="e"):
             if(contadorcomumEndocrinologia<10):
                 senha="ce00"+str(contadorcomumEndocrinologia)
-                
+
             elif(contadorcomumEndocrinologia>=10 and contadorcomumEndocrinologia<100):
                 senha="ce0"+str(contadorcomumEndocrinologia)
-               
+
             elif(contadorcomumEndocrinologia>=100):
                 senha="ce"+str(contadorcomumEndocrinologia)
-                
+
         elif(consultorio=="O" or consultorio=="o"):
             if(contadorcomumOrtopedia<10):
                 senha="co00"+str(contadorcomumOrtopedia)
-                
+
             elif(contadorcomumOrtopedia>=10 and contadorcomumOrtopedia<100):
                 senha="co0"+str(contadorcomumOrtopedia)
-                
+
             elif(contadorcomumOrtopedia>=100):
                 senha="co"+str(contadorcomumOrtopedia)
-               
+
     else:
         if(consultorio=="d" or consultorio=="D"):
             if(contadorpreferencialDermatologia<10):
                 senha="pd00"+str(contadorpreferencialDermatologia)
-               
+
             elif(contadorpreferencialDermatologia>=10 and contadorpreferencialDermatologia<100):
                 senha="pd0"+str(contadorpreferencialDermatologia)
-                
+
             elif(contadorpreferencialDermatologia>=100):
                 senha="pd"+str(contadorpreferencialDermatologia)
-                
+
         elif(consultorio=="E" or consultorio=="e"):
             if(contadorpreferencialEndocrinologia<10):
                 senha="pe00"+str(contadorpreferencialEndocrinologia)
-                
+
             elif(contadorpreferencialEndocrinologia>=10 and contadorpreferencialEndocrinologia<100):
                 senha="pe0"+str(contadorpreferencialEndocrinologia)
-                
+
             elif(contadorpreferencialEndocrinologia>=100):
                 senha="pe"+str(contadorpreferencialEndocrinologia)
-                
+
         elif(consultorio=="O" or consultorio=="o"):
             if(contadorpreferencialOrtopedia<10):
                 senha="po00"+str(contadorpreferencialOrtopedia)
-                
+
             elif(contadorpreferencialOrtopedia>=10 and contadorpreferencialOrtopedia<100):
                 senha="po0"+str(contadorpreferencialOrtopedia)
 
             elif(contadorpreferencialOrtopedia>=100):
                 senha="po"+str(contadorpreferencialOrtopedia)
-               
+
     return senha
 
 #Esta função serve para verificar se um valor digitado é composto apenas por numeros
@@ -183,8 +183,151 @@ def EmitirSenha(contadorcomumDermatologia, contadorcomumEndocrinologia, contador
 
 
 
-def ChamarPacienteParaAtendimento():
+def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, paciente_em_antendimento_Endocrinologia,
+                                  paciente_em_antendimento_Ortopedia, listaEsperaPacienteComumDermatologia,
+                                  listaEsperaPacientePrioritarioDermatologia, listaEsperaPacienteComumEndocrinologia,
+                                  listaEsperaPacientePrioritarioEndocrinologia, listaEsperaPacienteComumOrtopedia,
+                                  listaEsperaPacientePrioritarioOrtopedia, tamComumDermatologiaAtendido,
+                                  tamComumEndocrinologiaAtendido, tamComumOrtopediaAtendido,
+                                  tamPrioritarioDermatologiaAtendido, tamPrioritarioEndocrinologiaAtendido,
+                                  tamPrioritarioOrtopediaAtendido):
+    '''
+    tamPrioritarioDermatologia=len(listaPacientePrioritarioDermatologia)
+    tamPrioritarioEndocrinologia=len(listaPacientePrioritarioEndocrinologia)
+    tamPrioritarioOrtopedia=len(listaPacientePrioritarioOrtopedia)
+    tamComumDermatologia=len(listaPacienteComumDermatologia)
+    tamComumEndocrinologia=len(listaPacienteComumEndocrinologia)
+    tamComumOrtopedia=len(listaPacienteComumOrtopedia)
+    '''
+    hora_atendimento_Dematologia=0
+    minuto_atendimento_Dematologia=0
+    hora_atendimento_Endocrinologia=0
+    minuto_atendimento_Endocrinologia=0
+    hora_atendimento_Ortopedia=0
+    minuto_atendimento_Ortopedia=0
+    MSG="O paciente não compareceu, selecione a opção 3 para pular o paciente"
+    if(paciente_em_antendimento_Dermatologia==""):
+        if(tamComumDermatologiaAtendido>tamPrioritarioDermatologiaAtendido):
+            print("Próxima senha do consultório de DERMATOLOGIA:")
+            print(listaEsperaPacientePrioritarioDermatologia[0][5], "-", listaEsperaPacientePrioritarioDermatologia[0][1],
+                  "- Consultório de Dermatologia")
+            comparecimento=input("O paciente compareceu? Digite 'N' para voltar ao menu e pular paciente. "
+                        "Digite 'S' para continuar com o atendimento")
+            if(comparecimento=="S" or comparecimento=="s"):
+                paciente_em_antendimento_Dermatologia=listaEsperaPacientePrioritarioOrtopedia[0]
+                print("Para inserir o horário você deve primeiro digitar a hora ex: são 12:40, então você deve digitar 12 e apertar enter\n"
+                "Depois você digita os minutos ex: são 12:40, então você deve digitar 40 e apertar enter")
+                hora_atendimento_Dematologia=input("Digite a hora")
+                boolhora=VerificarInt(hora_atendimento_Dematologia)
+                hora_atendimento_Dematologia=ValidarHora(boolhora, hora_atendimento_Dematologia)
+                minuto_atendimento_Dematologia=input("Digite o minuto")
+                boolminuto=VerificarInt(hora_atendimento_Dematologia)
+                minuto_atendimento_Dematologia=ValidarMinuto(boolminuto, minuto_atendimento_Dematologia)
+                listaEsperaPacientePrioritarioDermatologia.pop(0)
+            else:
+                return MSG
+        else:
+            print("Próxima senha do consultório de DERMATOLOGIA:")
+            print(listaEsperaPacienteComumDermatologia[0][5], "-", listaEsperaPacienteComumDermatologia[0][1],
+                  "- Consultório de Dermatologia")
+            comparecimento=input("O paciente compareceu? Digite 'N' para voltar ao menu e pular paciente. "
+                        "Digite 'S' para continuar com o atendimento")
+            if(comparecimento=="S" or comparecimento=="s"):
+                paciente_em_antendimento_Dermatologia=listaEsperaPacienteComumDermatologia[0]
+                print("Para inserir o horário você deve primeiro digitar a hora ex: são 12:40, então você deve digitar 12 e apertar enter\n"
+                "Depois você digita os minutos ex: são 12:40, então você deve digitar 40 e apertar enter")
+                hora_atendimento_Dematologia=input("Digite a hora")
+                boolhora=VerificarInt(hora_atendimento_Dematologia)
+                hora_atendimento_Dematologia=ValidarHora(boolhora, hora_atendimento_Dematologia)
+                minuto_atendimento_Dematologia=input("Digite o minuto")
+                boolminuto=VerificarInt(hora_atendimento_Dematologia)
+                minuto_atendimento_Dematologia=ValidarMinuto(boolminuto, minuto_atendimento_Dematologia)
+                listaEsperaPacienteComumDermatologia.pop(0)
+            else:
+                return MSG
+    if(paciente_em_antendimento_Endocrinologia==""):
+        if(tamComumEndocrinologiaAtendido>tamPrioritarioEndocrinologiaAtendido):
+            print("Próxima senha do consultório de ENDOCRINOLOGIA:")
+            print(listaEsperaPacientePrioritarioEndocrinologia[0][5], "-", listaEsperaPacientePrioritarioEndocrinologia[0][1],
+                  "- Consultório de Endocrinologia")
+            comparecimento=input("O paciente compareceu? Digite 'N' para voltar ao menu e pular paciente. "
+                        "Digite 'S' para continuar com o atendimento")
+            if(comparecimento=="S" or comparecimento=="s"):
+                paciente_em_antendimento_Endocrinologia=listaEsperaPacientePrioritarioEndocrinologia[0]
+                print("Para inserir o horário você deve primeiro digitar a hora ex: são 12:40, então você deve digitar 12 e apertar enter\n"
+                "Depois você digita os minutos ex: são 12:40, então você deve digitar 40 e apertar enter")
+                hora_atendimento_Endocrinologia=input("Digite a hora")
+                boolhora=VerificarInt(hora_atendimento_Endocrinologia)
+                hora_atendimento_Endocrinologia=ValidarHora(boolhora, hora_atendimento_Endocrinologia)
+                minuto_atendimento_Endocrinologia=input("Digite o minuto")
+                boolminuto=VerificarInt(hora_atendimento_Endocrinologia)
+                minuto_atendimento_Endocrinologia=ValidarMinuto(boolminuto, minuto_atendimento_Endocrinologia)
+                listaEsperaPacientePrioritarioEndocrinologia.pop(0)
+            else:
+                return MSG
+        else:
+            print("Próxima senha do consultório de ENDOCRINOLOGIA:")
+            print(listaEsperaPacienteComumEndocrinologia[0][5], "-", listaEsperaPacienteComumEndocrinologia[0][1],
+                  "- Consultório de Endocrinologia")
+            comparecimento=input("O paciente compareceu? Digite 'N' para voltar ao menu e pular paciente. "
+                        "Digite 'S' para continuar com o atendimento")
+            if(comparecimento=="S" or comparecimento=="s"):
+                paciente_em_antendimento_Endocrinologia=listaEsperaPacientePrioritarioEndocrinologia[0]
+                print("Para inserir o horário você deve primeiro digitar a hora ex: são 12:40, então você deve digitar 12 e apertar enter\n"
+                "Depois você digita os minutos ex: são 12:40, então você deve digitar 40 e apertar enter")
+                hora_atendimento_Endocrinologia=input("Digite a hora")
+                boolhora=VerificarInt(hora_atendimento_Endocrinologia)
+                hora_atendimento_Endocrinologia=ValidarHora(boolhora, hora_atendimento_Endocrinologia)
+                minuto_atendimento_Endocrinologia=input("Digite o minuto")
+                boolminuto=VerificarInt(hora_atendimento_Endocrinologia)
+                minuto_atendimento_Endocrinologia=ValidarMinuto(boolminuto, minuto_atendimento_Endocrinologia)
+                listaEsperaPacienteComumEndocrinologia.pop(0)
+            else:
+                return MSG
+    if(paciente_em_antendimento_Ortopedia==""):
+        if(tamComumOrtopediaAtendido>tamPrioritarioOrtopediaAtendido):
+            print("Próxima senha do consultório de ORTOPEDIA:")
+            print(listaEsperaPacientePrioritarioOrtopedia[0][5], "-", listaEsperaPacientePrioritarioOrtopedia[0][1],
+                  "- Consultório de Ortopedia")
+            comparecimento=input("O paciente compareceu? Digite 'N' para voltar ao menu e pular paciente. "
+                        "Digite 'S' para continuar com o atendimento")
+            if(comparecimento=="S" or comparecimento=="s"):
+                paciente_em_antendimento_Ortopedia=listaEsperaPacientePrioritarioOrtopedia[0]
+                print("Para inserir o horário você deve primeiro digitar a hora ex: são 12:40, então você deve digitar 12 e apertar enter\n"
+                "Depois você digita os minutos ex: são 12:40, então você deve digitar 40 e apertar enter")
+                hora_atendimento_Ortopedia=input("Digite a hora")
+                boolhora=VerificarInt(hora_atendimento_Ortopedia)
+                hora_atendimento_Ortopedia=ValidarHora(boolhora, hora_atendimento_Ortopedia)
+                minuto_atendimento_Ortopedia=input("Digite o minuto")
+                boolminuto=VerificarInt(hora_atendimento_Ortopedia)
+                minuto_atendimento_Ortopedia=ValidarMinuto(boolminuto, minuto_atendimento_Ortopedia)
+                listaEsperaPacientePrioritarioOrtopedia.pop(0)
+            else:
+                return MSG
+        else:
+            print("Próxima senha do consultório de ORTOPEDIA:")
+            print(listaEsperaPacienteComumOrtopedia[0][5], "-", listaEsperaPacienteComumOrtopedia[0][1],
+                  "- Consultório de Ortopedia")
+            comparecimento=input("O paciente compareceu? Digite 'N' para voltar ao menu e pular paciente. "
+                        "Digite 'S' para continuar com o atendimento")
+            if(comparecimento=="S" or comparecimento=="s"):
+                paciente_em_antendimento_Ortopedia=listaEsperaPacientePrioritarioOrtopedia[0]
+                print("Para inserir o horário você deve primeiro digitar a hora ex: são 12:40, então você deve digitar 12 e apertar enter\n"
+                "Depois você digita os minutos ex: são 12:40, então você deve digitar 40 e apertar enter")
+                hora_atendimento_Ortopedia=input("Digite a hora")
+                boolhora=VerificarInt(hora_atendimento_Ortopedia)
+                hora_atendimento_Ortopedia=ValidarHora(boolhora, hora_atendimento_Ortopedia)
+                minuto_atendimento_Ortopedia=input("Digite o minuto")
+                boolminuto=VerificarInt(hora_atendimento_Ortopedia)
+                minuto_atendimento_Ortopedia=ValidarMinuto(boolminuto, minuto_atendimento_Ortopedia)
+                listaEsperaPacienteComumOrtopedia.pop(0)
+            else:
+                return MSG
     print('Esta função serve para chamar pacientes para serem atendidos');
+    return paciente_em_antendimento_Ortopedia, paciente_em_antendimento_Endocrinologia, paciente_em_antendimento_Dermatologia, \
+           hora_atendimento_Dematologia, minuto_atendimento_Dematologia, hora_atendimento_Endocrinologia, \
+           minuto_atendimento_Endocrinologia, hora_atendimento_Ortopedia, minuto_atendimento_Ortopedia
+
 
 def PularPaciente():
     print("Esta função serve para chamar pacientes")
