@@ -117,7 +117,7 @@ while(opcao!=9):
                                                   listaEsperaPacientePrioritarioOrtopedia, tamComumDermatologiaAtendido,
                                                   tamComumEndocrinologiaAtendido, tamComumOrtopediaAtendido,
                                                   tamPrioritarioDermatologiaAtendido, tamPrioritarioEndocrinologiaAtendido,
-                                                  tamPrioritarioOrtopediaAtendido))
+                                                  tamPrioritarioOrtopediaAtendido, dados_Pacientes))
 
         #A função chamada acima retorna varios valores, então é necessário fazer o desempacotamento desses dados,
         #o desempacotamento está sendo feito no trecho de código abaixo
@@ -136,6 +136,7 @@ while(opcao!=9):
         listaEsperaPacientePrioritarioEndocrinologia=Dados_paciente_chamados_para_atendimento[12]
         listaEsperaPacienteComumOrtopedia=Dados_paciente_chamados_para_atendimento[13]
         listaEsperaPacientePrioritarioOrtopedia=Dados_paciente_chamados_para_atendimento[14]
+        dados_Pacientes=Dados_paciente_chamados_para_atendimento[15]
         #O bloco de codigo abaixo é para inserir a data de inicio da consulta de um usuario no dicionario de dados
         if(len(paciente_em_antendimento_Ortopedia)==8):
             dados_Pacientes[paciente_em_antendimento_Ortopedia[5]].append(paciente_em_antendimento_Ortopedia[6])
@@ -160,7 +161,7 @@ while(opcao!=9):
         while(not dados_Pacientes.get(excluir_Paciente)):
             excluir_Paciente=input("Digite a chave do paciente que deseja excluir")
 
-        #verificando em qual lista está a chave, para mandar a lista correspondente para a função de exclusao
+        #verificando em qual lista está a chave, para mandar a lista correspondente para a função de exclusão
         if(dados_Pacientes.get(excluir_Paciente)):
             if(len(dados_Pacientes[excluir_Paciente])==6):
                 if(excluir_Paciente[0]=="c"):

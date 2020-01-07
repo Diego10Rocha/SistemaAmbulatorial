@@ -197,7 +197,7 @@ def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, pacient
                                   listaEsperaPacientePrioritarioOrtopedia, tamComumDermatologiaAtendido,
                                   tamComumEndocrinologiaAtendido, tamComumOrtopediaAtendido,
                                   tamPrioritarioDermatologiaAtendido, tamPrioritarioEndocrinologiaAtendido,
-                                  tamPrioritarioOrtopediaAtendido):
+                                  tamPrioritarioOrtopediaAtendido, dados_Pacientes):
 
     opcao=0
     hora_atendimento_Dermatologia=0
@@ -227,23 +227,25 @@ def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, pacient
                         print("Próxima senha do consultório de DERMATOLOGIA:")
                         print(listaEsperaPacientePrioritarioDermatologia[0][5], "-", listaEsperaPacientePrioritarioDermatologia[0][1],
                               "- Consultório de Dermatologia")
-                        comparecimento=input("O paciente compareceu? Digite 'N' para voltar ao menu e pular paciente. "
+                        comparecimento=input("O paciente compareceu? Digite 'N' para pular o paciente e chamar o proximo. "
                                     "Digite 'S' para continuar com o atendimento")
                         if(comparecimento=="S" or comparecimento=="s"):
-                            paciente_em_antendimento_Dermatologia=listaEsperaPacientePrioritarioOrtopedia[0]
+                            paciente_em_antendimento_Dermatologia=listaEsperaPacientePrioritarioDermatologia[0]
                             hora_atendimento_Dermatologia=SolicitarHora()
                             minuto_atendimento_Dermatologia=SolicitarMinuto()
                             paciente_em_antendimento_Dermatologia.append(hora_atendimento_Dermatologia)
                             paciente_em_antendimento_Dermatologia.append(minuto_atendimento_Dermatologia)
                             listaEsperaPacientePrioritarioDermatologia.pop(0)
                         else:
-                            print(MSG)
-                            break
+                            dados_Pacientes, listaEsperaPacientePrioritarioDermatologia=\
+                                PularPaciente(dados_Pacientes, listaEsperaPacientePrioritarioDermatologia[0][5],
+                                              listaEsperaPacientePrioritarioDermatologia)
+
                     elif(not paciente_em_antendimento_Dermatologia and listaEsperaPacienteComumDermatologia):
                         print("Próxima senha do consultório de DERMATOLOGIA:")
                         print(listaEsperaPacienteComumDermatologia[0][5], "-", listaEsperaPacienteComumDermatologia[0][1],
                               "- Consultório de Dermatologia")
-                        comparecimento=input("O paciente compareceu? Digite 'N' para voltar ao menu e pular paciente. "
+                        comparecimento=input("O paciente compareceu? Digite 'N' para pular o paciente e chamar o próximo. "
                                     "Digite 'S' para continuar com o atendimento")
                         if(comparecimento=="S" or comparecimento=="s"):
                             paciente_em_antendimento_Dermatologia=listaEsperaPacienteComumDermatologia[0]
@@ -253,82 +255,89 @@ def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, pacient
                             paciente_em_antendimento_Dermatologia.append(minuto_atendimento_Dermatologia)
                             listaEsperaPacienteComumDermatologia.pop(0)
                         else:
-                            print(MSG)
-                            break
+                            dados_Pacientes, listaEsperaPacienteComumDermatologia=\
+                                PularPaciente(dados_Pacientes,listaEsperaPacienteComumDermatologia[0][5],
+                                              listaEsperaPacienteComumDermatologia)
             else:
                 print("Não há pacientes na lista de espera de dermatologia")
         elif(opcao=="2"):
             if(not paciente_em_antendimento_Endocrinologia and listaEsperaPacienteComumEndocrinologia and
                     listaEsperaPacientePrioritarioEndocrinologia):
-                if(tamComumEndocrinologiaAtendido>tamPrioritarioEndocrinologiaAtendido):
-                    print("Próxima senha do consultório de ENDOCRINOLOGIA:")
-                    print(listaEsperaPacientePrioritarioEndocrinologia[0][5], "-" , listaEsperaPacientePrioritarioEndocrinologia[0][1],
-                          "- Consultório de Endocrinologia")
-                    comparecimento=input("O paciente compareceu? Digite 'N' para voltar ao menu e pular paciente. "
-                                "Digite 'S' para continuar com o atendimento")
-                    if(comparecimento=="S" or comparecimento=="s"):
-                        paciente_em_antendimento_Endocrinologia=listaEsperaPacientePrioritarioEndocrinologia[0]
-                        hora_atendimento_Endocrinologia=SolicitarHora()
-                        minuto_atendimento_Endocrinologia=SolicitarMinuto()
-                        paciente_em_antendimento_Endocrinologia.append(hora_atendimento_Endocrinologia)
-                        paciente_em_antendimento_Endocrinologia.append(minuto_atendimento_Endocrinologia)
-                        listaEsperaPacientePrioritarioEndocrinologia.pop(0)
+                while(comparecimento=="n" or comparecimento=="N"):
+                    if(tamComumEndocrinologiaAtendido>tamPrioritarioEndocrinologiaAtendido):
+                        print("Próxima senha do consultório de ENDOCRINOLOGIA:")
+                        print(listaEsperaPacientePrioritarioEndocrinologia[0][5], "-" , listaEsperaPacientePrioritarioEndocrinologia[0][1],
+                              "- Consultório de Endocrinologia")
+                        comparecimento=input("O paciente compareceu? Digite 'N' para pular o paciente e chamar o próximo. "
+                                    "Digite 'S' para continuar com o atendimento")
+                        if(comparecimento=="S" or comparecimento=="s"):
+                            paciente_em_antendimento_Endocrinologia=listaEsperaPacientePrioritarioEndocrinologia[0]
+                            hora_atendimento_Endocrinologia=SolicitarHora()
+                            minuto_atendimento_Endocrinologia=SolicitarMinuto()
+                            paciente_em_antendimento_Endocrinologia.append(hora_atendimento_Endocrinologia)
+                            paciente_em_antendimento_Endocrinologia.append(minuto_atendimento_Endocrinologia)
+                            listaEsperaPacientePrioritarioEndocrinologia.pop(0)
+                        else:
+                            dados_Pacientes, listaEsperaPacientePrioritarioEndocrinologia=\
+                                PularPaciente(dados_Pacientes, listaEsperaPacientePrioritarioEndocrinologia[0][5],
+                                              listaEsperaPacientePrioritarioEndocrinologia)
                     else:
-                        print(MSG)
-                        break
-                else:
-                    print("Próxima senha do consultório de ENDOCRINOLOGIA:")
-                    print(listaEsperaPacienteComumEndocrinologia[0][5], "-", listaEsperaPacienteComumEndocrinologia[0][1],
-                          "- Consultório de Endocrinologia")
-                    comparecimento=input("O paciente compareceu? Digite 'N' para voltar ao menu e pular paciente. "
-                                "Digite 'S' para continuar com o atendimento")
-                    if(comparecimento=="S" or comparecimento=="s"):
-                        paciente_em_antendimento_Endocrinologia=listaEsperaPacientePrioritarioEndocrinologia[0]
-                        hora_atendimento_Endocrinologia=SolicitarHora()
-                        minuto_atendimento_Endocrinologia=SolicitarMinuto()
-                        paciente_em_antendimento_Endocrinologia.append(hora_atendimento_Endocrinologia)
-                        paciente_em_antendimento_Endocrinologia.append(minuto_atendimento_Endocrinologia)
-                        listaEsperaPacienteComumEndocrinologia.pop(0)
-                    else:
-                        print(MSG)
-                        break
+                        print("Próxima senha do consultório de ENDOCRINOLOGIA:")
+                        print(listaEsperaPacienteComumEndocrinologia[0][5], "-", listaEsperaPacienteComumEndocrinologia[0][1],
+                              "- Consultório de Endocrinologia")
+                        comparecimento=input("O paciente compareceu? Digite 'N' para pular o paciente e chamar o próximo. "
+                                    "Digite 'S' para continuar com o atendimento")
+                        if(comparecimento=="S" or comparecimento=="s"):
+                            paciente_em_antendimento_Endocrinologia=listaEsperaPacienteComumEndocrinologia[0]
+                            hora_atendimento_Endocrinologia=SolicitarHora()
+                            minuto_atendimento_Endocrinologia=SolicitarMinuto()
+                            paciente_em_antendimento_Endocrinologia.append(hora_atendimento_Endocrinologia)
+                            paciente_em_antendimento_Endocrinologia.append(minuto_atendimento_Endocrinologia)
+                            listaEsperaPacienteComumEndocrinologia.pop(0)
+                        else:
+                            dados_Pacientes, listaEsperaPacienteComumEndocrinologia=\
+                                PularPaciente(dados_Pacientes, listaEsperaPacienteComumEndocrinologia[0][5],
+                                              listaEsperaPacienteComumEndocrinologia)
             else:
                 print("Não há pacientes na lista de espera de endocrinologia")
         elif(opcao=="3"):
             if(not paciente_em_antendimento_Ortopedia and listaEsperaPacienteComumOrtopedia
                     and listaEsperaPacientePrioritarioOrtopedia):
-                if(tamComumOrtopediaAtendido>tamPrioritarioOrtopediaAtendido):
-                    print("Próxima senha do consultório de ORTOPEDIA:")
-                    print(listaEsperaPacientePrioritarioOrtopedia[0][5], "-", listaEsperaPacientePrioritarioOrtopedia[0][1],
-                          "- Consultório de Ortopedia")
-                    comparecimento=input("O paciente compareceu? Digite 'N' para voltar ao menu e pular paciente. "
-                                "Digite 'S' para continuar com o atendimento")
-                    if(comparecimento=="S" or comparecimento=="s"):
-                        paciente_em_antendimento_Ortopedia=listaEsperaPacientePrioritarioOrtopedia[0]
-                        hora_atendimento_Ortopedia=SolicitarHora()
-                        minuto_atendimento_Ortopedia=SolicitarMinuto()
-                        paciente_em_antendimento_Ortopedia.append(hora_atendimento_Ortopedia)
-                        paciente_em_antendimento_Ortopedia.append(minuto_atendimento_Ortopedia)
-                        listaEsperaPacientePrioritarioOrtopedia.pop(0)
+                while(comparecimento=="n" or comparecimento=="N"):
+                    if(tamComumOrtopediaAtendido>tamPrioritarioOrtopediaAtendido):
+                        print("Próxima senha do consultório de ORTOPEDIA:")
+                        print(listaEsperaPacientePrioritarioOrtopedia[0][5], "-", listaEsperaPacientePrioritarioOrtopedia[0][1],
+                              "- Consultório de Ortopedia")
+                        comparecimento=input("O paciente compareceu? Digite 'N' para voltar ao menu e pular paciente. "
+                                    "Digite 'S' para continuar com o atendimento")
+                        if(comparecimento=="S" or comparecimento=="s"):
+                            paciente_em_antendimento_Ortopedia=listaEsperaPacientePrioritarioOrtopedia[0]
+                            hora_atendimento_Ortopedia=SolicitarHora()
+                            minuto_atendimento_Ortopedia=SolicitarMinuto()
+                            paciente_em_antendimento_Ortopedia.append(hora_atendimento_Ortopedia)
+                            paciente_em_antendimento_Ortopedia.append(minuto_atendimento_Ortopedia)
+                            listaEsperaPacientePrioritarioOrtopedia.pop(0)
+                        else:
+                            dados_Pacientes, listaEsperaPacientePrioritarioOrtopedia=\
+                                PularPaciente(dados_Pacientes, listaEsperaPacientePrioritarioOrtopedia[0][5],
+                                              listaEsperaPacientePrioritarioOrtopedia)
                     else:
-                        print(MSG)
-                        break
-                else:
-                    print("Próxima senha do consultório de ORTOPEDIA:")
-                    print(listaEsperaPacienteComumOrtopedia[0][5], "-", listaEsperaPacienteComumOrtopedia[0][1],
-                          "- Consultório de Ortopedia")
-                    comparecimento=input("O paciente compareceu? Digite 'N' para voltar ao menu e pular paciente. "
-                                "Digite 'S' para continuar com o atendimento")
-                    if(comparecimento=="S" or comparecimento=="s"):
-                        paciente_em_antendimento_Ortopedia=listaEsperaPacientePrioritarioOrtopedia[0]
-                        hora_atendimento_Ortopedia=SolicitarHora()
-                        minuto_atendimento_Ortopedia=SolicitarMinuto()
-                        paciente_em_antendimento_Ortopedia.append(hora_atendimento_Ortopedia)
-                        paciente_em_antendimento_Ortopedia.append(minuto_atendimento_Ortopedia)
-                        listaEsperaPacienteComumOrtopedia.pop(0)
-                    else:
-                        print(MSG)
-                        break
+                        print("Próxima senha do consultório de ORTOPEDIA:")
+                        print(listaEsperaPacienteComumOrtopedia[0][5], "-", listaEsperaPacienteComumOrtopedia[0][1],
+                              "- Consultório de Ortopedia")
+                        comparecimento=input("O paciente compareceu? Digite 'N' para voltar ao menu e pular paciente. "
+                                    "Digite 'S' para continuar com o atendimento")
+                        if(comparecimento=="S" or comparecimento=="s"):
+                            paciente_em_antendimento_Ortopedia=listaEsperaPacienteComumOrtopedia[0]
+                            hora_atendimento_Ortopedia=SolicitarHora()
+                            minuto_atendimento_Ortopedia=SolicitarMinuto()
+                            paciente_em_antendimento_Ortopedia.append(hora_atendimento_Ortopedia)
+                            paciente_em_antendimento_Ortopedia.append(minuto_atendimento_Ortopedia)
+                            listaEsperaPacienteComumOrtopedia.pop(0)
+                        else:
+                            dados_Pacientes, listaEsperaPacienteComumOrtopedia=\
+                                PularPaciente(dados_Pacientes, listaEsperaPacienteComumOrtopedia[0][5],
+                                              listaEsperaPacienteComumOrtopedia)
         else:
             print("Não há pacientes na lista de espera de ortopedia")
         return paciente_em_antendimento_Ortopedia, paciente_em_antendimento_Endocrinologia, \
@@ -338,7 +347,7 @@ def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, pacient
                minuto_atendimento_Ortopedia, listaEsperaPacienteComumDermatologia, \
                listaEsperaPacientePrioritarioDermatologia, listaEsperaPacienteComumEndocrinologia, \
                listaEsperaPacientePrioritarioEndocrinologia, listaEsperaPacienteComumOrtopedia, \
-               listaEsperaPacientePrioritarioOrtopedia
+               listaEsperaPacientePrioritarioOrtopedia, dados_Pacientes
 
 
 def PularPaciente(dados_Pacientes, excluir_Paciente, listaEspera):
