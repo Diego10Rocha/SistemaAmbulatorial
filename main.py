@@ -63,35 +63,35 @@ while(opcao!=9):
     opcao=ValidarOpcao(boolOpcao, opcao)
 
     if(opcao==1):
-        pacientes=[EmitirSenha(contadorcomumDermatologia, contadorcomumEndocrinologia, contadorcomumOrtopedia,
-                               contadorpreferencialDermatologia, contadorpreferencialEndocrinologia,
-                               contadorpreferencialOrtopedia)]
+        pacientes=EmitirSenha(contadorcomumDermatologia, contadorcomumEndocrinologia,
+                               contadorcomumOrtopedia, contadorpreferencialDermatologia,
+                               contadorpreferencialEndocrinologia, contadorpreferencialOrtopedia)
 
         if(pacientes[0]=="c" or pacientes[0]=="C"):
 
-            if(pacientes[0][4]=="d" or pacientes[0][4]=="D"):
+            if(pacientes[4]=="d" or pacientes[4]=="D"):
               listaPacienteComumDermatologia.append(pacientes)
               listaEsperaPacienteComumDermatologia.append(pacientes)
               contadorcomumDermatologia+=1
-            elif(pacientes[0][4]=="e" or pacientes[0][4]=="E"):
+            elif(pacientes[4]=="e" or pacientes[4]=="E"):
               listaPacienteComumEndocrinologia.append(pacientes)
               listaEsperaPacienteComumEndocrinologia.append(pacientes)
               contadorcomumEndocrinologia+=1
-            elif(pacientes[0][4]=="O" or pacientes[0][4]=="o"):
+            elif(pacientes[4]=="O" or pacientes[4]=="o"):
               listaPacienteComumOrtopedia.append(pacientes)
               listaEsperaPacienteComumOrtopedia.append(pacientes)
               contadorcomumOrtopedia+=1
 
         elif(pacientes[0]=="p" or pacientes[0]=="P"):
-            if(pacientes[0][4]=="d" or pacientes[0][4]=="D"):
+            if(pacientes[4]=="d" or pacientes[4]=="D"):
               listaPacientePrioritarioDermatologia.append(pacientes)
               listaEsperaPacientePrioritarioDermatologia.append(pacientes)
               contadorpreferencialDermatologia+=1
-            elif(pacientes[0][4]=="e" or pacientes[0][4]=="E"):
+            elif(pacientes[4]=="e" or pacientes[4]=="E"):
               listaPacientePrioritarioEndocrinologia.append(pacientes)
               listaEsperaPacientePrioritarioEndocrinologia.append(pacientes)
               contadorpreferencialEndocrinologia+=1
-            elif(pacientes[0][4]=="O" or pacientes[0][4]=="o"):
+            elif(pacientes[4]=="O" or pacientes[4]=="o"):
               listaPacientePrioritarioOrtopedia.append(pacientes)
               listaEsperaPacientePrioritarioOrtopedia.append(pacientes)
               contadorpreferencialOrtopedia+=1

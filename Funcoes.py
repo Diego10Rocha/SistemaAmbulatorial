@@ -1,5 +1,7 @@
 #Esta função foi criada para gerar senhas para os pacientes por ordem de chegada
-def gerarSenha(tipo, consultorio, contadorcomumDermatologia, contadorcomumEndocrinologia, contadorcomumOrtopedia, contadorpreferencialDermatologia, contadorpreferencialEndocrinologia, contadorpreferencialOrtopedia):
+def gerarSenha(tipo, consultorio, contadorcomumDermatologia, contadorcomumEndocrinologia,
+               contadorcomumOrtopedia, contadorpreferencialDermatologia,
+               contadorpreferencialEndocrinologia, contadorpreferencialOrtopedia):
 
     if(tipo=="C" or tipo=="c"):
         if(consultorio=="d" or consultorio=="D"):
@@ -152,7 +154,9 @@ def MENU():
     print("#  [9] - Encerrar programa                               #")
     print("##########################################################")
 
-def EmitirSenha(contadorcomumDermatologia, contadorcomumEndocrinologia, contadorcomumOrtopedia, contadorpreferencialDermatologia, contadorpreferencialEndocrinologia, contadorpreferencialOrtopedia):
+def EmitirSenha(contadorcomumDermatologia, contadorcomumEndocrinologia,
+                contadorcomumOrtopedia, contadorpreferencialDermatologia,
+                contadorpreferencialEndocrinologia, contadorpreferencialOrtopedia):
 
     #pacienteComum=[]
     #pacientePrioritario=[]
