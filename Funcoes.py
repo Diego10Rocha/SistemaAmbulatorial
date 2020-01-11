@@ -154,7 +154,22 @@ def VariacaoDeTempo(hora_inicio, minuto_inicio, hora_final, minuto_final):
     hora_total=variacao//60
     minuto_total=(variacao%60)
     return hora_total, minuto_total
-def Gerar_Tabela(tabela, lista_Pacientes_Atendidos):
+
+def Gerar_Tabela_Pacientes_Em_Espera(tabela, lista_Pacientes_Espera, hora, minuto):
+    for i in range(len(lista_Pacientes_Espera)):
+        hora_espera_na_fila, minuto_espera_na_fila=VariacaoDeTempo(lista_Pacientes_Espera[i][2], lista_Pacientes_Espera[i][3],
+                                                   hora, minuto)
+        tempo_espera_na_fila=str(hora_espera_na_fila)+" h : "+str(minuto_espera_na_fila)+" min"
+        if(lista_Pacientes_Espera[i][4]=="d" or lista_Pacientes_Espera[i][4]=="D"):
+            tabela.add_row([lista_Pacientes_Espera[i][5], lista_Pacientes_Espera[i][1], "Dermatologia", "Em espera", tempo_espera_na_fila])
+        elif(lista_Pacientes_Espera[i][4]=="e" or lista_Pacientes_Espera[i][4]=="E"):
+            tabela.add_row([lista_Pacientes_Espera[i][5], lista_Pacientes_Espera[i][1], "Endocrinologia", "Em espera", tempo_espera_na_fila])
+        else:
+            tabela.add_row([lista_Pacientes_Espera[i][5], lista_Pacientes_Espera[i][1], "Ortopedia", "Em espera", tempo_espera_na_fila])
+
+    return tabela
+
+def Gerar_Tabela_Pacientes_Atendidos(tabela, lista_Pacientes_Atendidos):
     for i in range(len(lista_Pacientes_Atendidos)):
         hora_espera_na_fila, minuto_espera_na_fila=VariacaoDeTempo(lista_Pacientes_Atendidos[i][2], lista_Pacientes_Atendidos[i][3],
                                              lista_Pacientes_Atendidos[i][6], lista_Pacientes_Atendidos[i][7])
@@ -168,6 +183,21 @@ def Gerar_Tabela(tabela, lista_Pacientes_Atendidos):
             tabela.add_row([lista_Pacientes_Atendidos[i][1], tempo_espera_na_fila, tempo_atendimento, "Endocrinologia", "Dr. Fernando Santos"])
         else:
             tabela.add_row([lista_Pacientes_Atendidos[i][1], tempo_espera_na_fila, tempo_atendimento, "Ortopedia", "Dra. Maria do Carmo Silva"])
+
+    return tabela
+
+def Gerar_Tabela_Pacientes_Em_Atendimento(tabela, lista_Pacientes_Atendimento):
+    if(lista_Pacientes_Atendimento):
+        hora_espera_na_fila, minuto_espera_na_fila=VariacaoDeTempo(lista_Pacientes_Atendimento[2], lista_Pacientes_Atendimento[3],
+                                                   lista_Pacientes_Atendimento[6], lista_Pacientes_Atendimento[7])
+        tempo_espera_na_fila=str(hora_espera_na_fila)+" h : "+str(minuto_espera_na_fila)+" min"
+
+        if(lista_Pacientes_Atendimento[4]=="d" or lista_Pacientes_Atendimento[4]=="D"):
+            tabela.add_row([lista_Pacientes_Atendimento[5], lista_Pacientes_Atendimento[1], "Dermatologia", "Em atendimento", tempo_espera_na_fila])
+        elif(lista_Pacientes_Atendimento[4]=="e" or lista_Pacientes_Atendimento[4]=="E"):
+            tabela.add_row([lista_Pacientes_Atendimento[5], lista_Pacientes_Atendimento[1], "Endocrinologia", "Em atendimento", tempo_espera_na_fila])
+        else:
+            tabela.add_row([lista_Pacientes_Atendimento[5], lista_Pacientes_Atendimento[1], "Ortopedia", "Em atendimento", tempo_espera_na_fila])
 
     return tabela
 
@@ -252,7 +282,7 @@ def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, pacient
                 if(not paciente_em_antendimento_Dermatologia and
                         (listaEsperaPacientePrioritarioDermatologia or listaEsperaPacienteComumDermatologia)):
 
-                    if(tamComumDermatologiaAtendido>tamPrioritarioDermatologiaAtendido):
+                    if((tamComumDermatologiaAtendido>=tamPrioritarioDermatologiaAtendido and listaEsperaPacientePrioritarioDermatologia) or not listaEsperaPacienteComumDermatologia):
                         print("Próxima senha do consultório de DERMATOLOGIA:")
                         print(listaEsperaPacientePrioritarioDermatologia[0][5], "-", listaEsperaPacientePrioritarioDermatologia[0][1],
                               "- Consultório de Dermatologia")
@@ -270,7 +300,7 @@ def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, pacient
                                 PularPaciente(dados_Pacientes, listaEsperaPacientePrioritarioDermatologia[0][5],
                                               listaEsperaPacientePrioritarioDermatologia)
 
-                    elif(not paciente_em_antendimento_Dermatologia and listaEsperaPacienteComumDermatologia):
+                    elif(listaEsperaPacienteComumDermatologia):
                         print("Próxima senha do consultório de DERMATOLOGIA:")
                         print(listaEsperaPacienteComumDermatologia[0][5], "-", listaEsperaPacienteComumDermatologia[0][1],
                               "- Consultório de Dermatologia")
@@ -295,7 +325,8 @@ def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, pacient
                 if(not paciente_em_antendimento_Endocrinologia and (listaEsperaPacienteComumEndocrinologia or
                         listaEsperaPacientePrioritarioEndocrinologia)):
 
-                    if(tamComumEndocrinologiaAtendido>tamPrioritarioEndocrinologiaAtendido):
+                    if((tamComumEndocrinologiaAtendido>=tamPrioritarioEndocrinologiaAtendido and listaEsperaPacientePrioritarioEndocrinologia)
+                            or not listaEsperaPacienteComumEndocrinologia):
                         print("Próxima senha do consultório de ENDOCRINOLOGIA:")
                         print(listaEsperaPacientePrioritarioEndocrinologia[0][5], "-" , listaEsperaPacientePrioritarioEndocrinologia[0][1],
                               "- Consultório de Endocrinologia")
@@ -312,7 +343,7 @@ def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, pacient
                             dados_Pacientes, listaEsperaPacientePrioritarioEndocrinologia=\
                                 PularPaciente(dados_Pacientes, listaEsperaPacientePrioritarioEndocrinologia[0][5],
                                               listaEsperaPacientePrioritarioEndocrinologia)
-                    else:
+                    elif(listaEsperaPacienteComumEndocrinologia):
                         print("Próxima senha do consultório de ENDOCRINOLOGIA:")
                         print(listaEsperaPacienteComumEndocrinologia[0][5], "-", listaEsperaPacienteComumEndocrinologia[0][1],
                               "- Consultório de Endocrinologia")
@@ -337,7 +368,7 @@ def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, pacient
                 if(not paciente_em_antendimento_Ortopedia and (listaEsperaPacienteComumOrtopedia
                         or listaEsperaPacientePrioritarioOrtopedia)):
 
-                    if(tamComumOrtopediaAtendido>tamPrioritarioOrtopediaAtendido):
+                    if((tamComumOrtopediaAtendido>=tamPrioritarioOrtopediaAtendido and listaEsperaPacientePrioritarioOrtopedia) or not listaEsperaPacienteComumOrtopedia):
                         print("Próxima senha do consultório de ORTOPEDIA:")
                         print(listaEsperaPacientePrioritarioOrtopedia[0][5], "-", listaEsperaPacientePrioritarioOrtopedia[0][1],
                               "- Consultório de Ortopedia")
@@ -354,7 +385,7 @@ def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, pacient
                             dados_Pacientes, listaEsperaPacientePrioritarioOrtopedia=\
                                 PularPaciente(dados_Pacientes, listaEsperaPacientePrioritarioOrtopedia[0][5],
                                               listaEsperaPacientePrioritarioOrtopedia)
-                    else:
+                    elif(listaEsperaPacienteComumOrtopedia):
                         print("Próxima senha do consultório de ORTOPEDIA:")
                         print(listaEsperaPacienteComumOrtopedia[0][5], "-", listaEsperaPacienteComumOrtopedia[0][1],
                               "- Consultório de Ortopedia")
@@ -390,6 +421,7 @@ def PularPaciente(dados_Pacientes, excluir_Paciente, listaEspera):
     for i in range (len(listaEspera)):
         if(listaEspera[i][5]==excluir_Paciente):
             listaEspera.pop(i)
+            break
     print("Paciente excluido do banco de dados")
     return dados_Pacientes, listaEspera
 def EncerrarConsulta(paciente_em_antendimento_Dermatologia, paciente_em_antendimento_Endocrinologia,
@@ -408,34 +440,32 @@ def EncerrarConsulta(paciente_em_antendimento_Dermatologia, paciente_em_antendim
         print("#  [4] - SAIR                                                  #")
         print("################################################################")
         opcao=input("Escolha uma opção: \n")
-        hora=0
-        minuto=0
-        senha=""
+
         if(opcao=="1"):
-            senha=paciente_em_antendimento_Dermatologia[5]
-            if(paciente_em_antendimento_Dermatologia[0]=="c" or paciente_em_antendimento_Dermatologia[0]=="C"):
-                listaPacienteComumAtendidoDermatologia.append(paciente_em_antendimento_Dermatologia)
-                paciente_em_antendimento_Dermatologia=[]
-                hora=SolicitarHora()
-                minuto=SolicitarMinuto()
-                tamLista=len(listaPacienteComumAtendidoDermatologia)
-                listaPacienteComumAtendidoDermatologia[tamLista-1].append(hora)
-                listaPacienteComumAtendidoDermatologia[tamLista-1].append(minuto)
-            else:
-                listaPacientePrioritarioAtendidoDermatologia.append(paciente_em_antendimento_Dermatologia)
-                paciente_em_antendimento_Dermatologia=[]
-                hora=SolicitarHora()
-                minuto=SolicitarMinuto()
-                tamLista=len(listaPacienteComumAtendidoDermatologia)
-                listaPacientePrioritarioAtendidoDermatologia[tamLista-1].append(hora)
-                listaPacientePrioritarioAtendidoDermatologia[tamLista-1].append(minuto)
+            if(paciente_em_antendimento_Dermatologia):
+                if(paciente_em_antendimento_Dermatologia[0]=="c" or paciente_em_antendimento_Dermatologia[0]=="C"):
+                    listaPacienteComumAtendidoDermatologia.append(paciente_em_antendimento_Dermatologia)
+                    paciente_em_antendimento_Dermatologia=[]
+                    hora=SolicitarHora()
+                    minuto=SolicitarMinuto()
+                    tamLista=len(listaPacienteComumAtendidoDermatologia)
+                    listaPacienteComumAtendidoDermatologia[tamLista-1].append(hora)
+                    listaPacienteComumAtendidoDermatologia[tamLista-1].append(minuto)
+                else:
+                    listaPacientePrioritarioAtendidoDermatologia.append(paciente_em_antendimento_Dermatologia)
+                    paciente_em_antendimento_Dermatologia=[]
+                    hora=SolicitarHora()
+                    minuto=SolicitarMinuto()
+                    tamLista=len(listaPacienteComumAtendidoDermatologia)
+                    listaPacientePrioritarioAtendidoDermatologia[tamLista-1].append(hora)
+                    listaPacientePrioritarioAtendidoDermatologia[tamLista-1].append(minuto)
+            break
         elif(opcao=="2"):
             if(paciente_em_antendimento_Endocrinologia):
-                senha=paciente_em_antendimento_Endocrinologia[5]
                 if(paciente_em_antendimento_Endocrinologia[5]=="c" or paciente_em_antendimento_Endocrinologia[5]=="C"):
                     Paciente_Encerrar=paciente_em_antendimento_Endocrinologia
                     listaPacienteComumAtendidoEndocrinologia.append(Paciente_Encerrar)
-                    paciente_em_antendimento_Endocrinologia.clear()
+                    paciente_em_antendimento_Endocrinologia=[]
                     hora=SolicitarHora()
                     minuto=SolicitarMinuto()
                     tamLista=len(listaPacienteComumAtendidoEndocrinologia)
@@ -444,19 +474,19 @@ def EncerrarConsulta(paciente_em_antendimento_Dermatologia, paciente_em_antendim
                 else:
                     Paciente_Encerrar=paciente_em_antendimento_Endocrinologia
                     listaPacientePrioritarioAtendidoEndocrinologia.append(Paciente_Encerrar)
-                    paciente_em_antendimento_Endocrinologia.clear()
+                    paciente_em_antendimento_Endocrinologia=[]
                     hora=SolicitarHora()
                     minuto=SolicitarMinuto()
                     tamLista=len(listaPacientePrioritarioAtendidoEndocrinologia)
                     listaPacientePrioritarioAtendidoEndocrinologia[tamLista-1].append(hora)
                     listaPacientePrioritarioAtendidoEndocrinologia[tamLista-1].append(minuto)
+            break
         elif(opcao=="3"):
             if(paciente_em_antendimento_Ortopedia):
-                senha=paciente_em_antendimento_Ortopedia[5]
                 if(paciente_em_antendimento_Ortopedia[5]=="c" or paciente_em_antendimento_Ortopedia[5]=="C"):
                     Paciente_Encerrar=paciente_em_antendimento_Ortopedia
                     listaPacienteComumAtendidoOrtopedia.append(Paciente_Encerrar)
-                    paciente_em_antendimento_Ortopedia.clear()
+                    paciente_em_antendimento_Ortopedia=[]
                     hora=SolicitarHora()
                     minuto=SolicitarMinuto()
                     tamLista=len(listaPacienteComumAtendidoOrtopedia)
@@ -465,21 +495,21 @@ def EncerrarConsulta(paciente_em_antendimento_Dermatologia, paciente_em_antendim
                 else:
                     Paciente_Encerrar=paciente_em_antendimento_Ortopedia
                     listaPacientePrioritarioAtendidoOrtopedia.append(Paciente_Encerrar)
-                    paciente_em_antendimento_Ortopedia.clear()
+                    paciente_em_antendimento_Ortopedia=[]
                     hora=SolicitarHora()
                     minuto=SolicitarMinuto()
                     tamLista=len(listaPacientePrioritarioAtendidoOrtopedia)
                     listaPacientePrioritarioAtendidoOrtopedia[tamLista-1].append(hora)
                     listaPacientePrioritarioAtendidoOrtopedia[tamLista-1].append(minuto)
+            break
 
-        return paciente_em_antendimento_Dermatologia, paciente_em_antendimento_Endocrinologia,\
-               paciente_em_antendimento_Ortopedia, listaPacienteComumAtendidoDermatologia,\
-               listaPacienteComumAtendidoEndocrinologia, listaPacienteComumAtendidoOrtopedia,\
-               listaPacientePrioritarioAtendidoDermatologia, listaPacientePrioritarioAtendidoEndocrinologia,\
-               listaPacientePrioritarioAtendidoOrtopedia, dados_Pacientes
+    return paciente_em_antendimento_Dermatologia, paciente_em_antendimento_Endocrinologia,\
+           paciente_em_antendimento_Ortopedia, listaPacienteComumAtendidoDermatologia,\
+           listaPacienteComumAtendidoEndocrinologia, listaPacienteComumAtendidoOrtopedia,\
+           listaPacientePrioritarioAtendidoDermatologia, listaPacientePrioritarioAtendidoEndocrinologia,\
+           listaPacientePrioritarioAtendidoOrtopedia, dados_Pacientes
 
 
-    print("Esta função serve para encerrar uma consulta")
 
 def ExibirFilaDeEspera(paciente_em_atendimento_Dermatologia, paciente_em_antendimento_Endocrinologia,
                         paciente_em_antendimento_Ortopedia, listaEsperaPacienteComumDermatologia,
@@ -555,12 +585,15 @@ def ExibirFilaDeEspera(paciente_em_atendimento_Dermatologia, paciente_em_antendi
         horaFormatada=str(hora_total)+" h : "+str(minuto_total)+" min"
         x.add_row([listaEsperaPacienteComumOrtopedia[i][5], listaEsperaPacienteComumOrtopedia[i][1], "Ortopedia", "Em espera", horaFormatada])
         '''
-    x=Gerar_Tabela(x, listaEsperaPacienteComumDermatologia)
-    x=Gerar_Tabela(x, listaEsperaPacientePrioritarioDermatologia)
-    x=Gerar_Tabela(x, listaEsperaPacienteComumEndocrinologia)
-    x=Gerar_Tabela(x, listaEsperaPacientePrioritarioEndocrinologia)
-    x=Gerar_Tabela(x, listaEsperaPacienteComumOrtopedia)
-    x=Gerar_Tabela(x, listaEsperaPacientePrioritarioOrtopedia)
+    x=Gerar_Tabela_Pacientes_Em_Atendimento(x, paciente_em_atendimento_Dermatologia)
+    x=Gerar_Tabela_Pacientes_Em_Espera(x, listaEsperaPacienteComumDermatologia, hora, minuto)
+    x=Gerar_Tabela_Pacientes_Em_Espera(x, listaEsperaPacientePrioritarioDermatologia, hora, minuto)
+    x=Gerar_Tabela_Pacientes_Em_Atendimento(x, paciente_em_antendimento_Endocrinologia)
+    x=Gerar_Tabela_Pacientes_Em_Espera(x, listaEsperaPacienteComumEndocrinologia, hora, minuto)
+    x=Gerar_Tabela_Pacientes_Em_Espera(x, listaEsperaPacientePrioritarioEndocrinologia, hora, minuto)
+    x=Gerar_Tabela_Pacientes_Em_Atendimento(x, paciente_em_antendimento_Ortopedia)
+    x=Gerar_Tabela_Pacientes_Em_Espera(x, listaEsperaPacienteComumOrtopedia, hora, minuto)
+    x=Gerar_Tabela_Pacientes_Em_Espera(x, listaEsperaPacientePrioritarioOrtopedia, hora, minuto)
     print(x)
 def ExibirPacientesAtendidosNoDia(listaPacienteComumAtendidoDermatologia, listaPacienteComumAtendidoEndocrinologia,
                                   listaPacienteComumAtendidoOrtopedia, listaPacientePrioritarioAtendidoDermatologia,
