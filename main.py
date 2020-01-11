@@ -52,9 +52,9 @@ listaPacientePrioritarioAtendidoEndocrinologia=[]
 listaPacienteComumAtendidoOrtopedia=[]
 listaPacientePrioritarioAtendidoOrtopedia=[]
 
-paciente_em_antendimento_Dermatologia=[]
-paciente_em_antendimento_Endocrinologia=[]
-paciente_em_antendimento_Ortopedia=[]
+paciente_em_atendimento_Dermatologia=[]
+paciente_em_atendimento_Endocrinologia=[]
+paciente_em_atendimento_Ortopedia=[]
 
 
 while(opcao!=9):
@@ -110,8 +110,8 @@ while(opcao!=9):
         tamComumEndocrinologiaAtendido=len(listaPacienteComumAtendidoEndocrinologia)
         tamComumOrtopediaAtendido=len(listaPacienteComumAtendidoOrtopedia)
         Dados_paciente_chamados_para_atendimento=(ChamarPacienteParaAtendimento
-                                                  (paciente_em_antendimento_Dermatologia, paciente_em_antendimento_Endocrinologia,
-                                                  paciente_em_antendimento_Ortopedia, listaEsperaPacienteComumDermatologia,
+                                                  (paciente_em_atendimento_Dermatologia, paciente_em_atendimento_Endocrinologia,
+                                                  paciente_em_atendimento_Ortopedia, listaEsperaPacienteComumDermatologia,
                                                   listaEsperaPacientePrioritarioDermatologia, listaEsperaPacienteComumEndocrinologia,
                                                   listaEsperaPacientePrioritarioEndocrinologia, listaEsperaPacienteComumOrtopedia,
                                                   listaEsperaPacientePrioritarioOrtopedia, tamComumDermatologiaAtendido,
@@ -119,11 +119,11 @@ while(opcao!=9):
                                                   tamPrioritarioDermatologiaAtendido, tamPrioritarioEndocrinologiaAtendido,
                                                   tamPrioritarioOrtopediaAtendido, dados_Pacientes))
 
-        #A função chamada acima retorna varios valores, então é necessário fazer o desempacotamento desses dados,
+        #A função chamada acima retorna varios valores, então  necessário fazer o desempacotamento desses dados,
         #o desempacotamento está sendo feito no trecho de código abaixo
-        paciente_em_antendimento_Ortopedia=Dados_paciente_chamados_para_atendimento[0]
-        paciente_em_antendimento_Endocrinologia=Dados_paciente_chamados_para_atendimento[1]
-        paciente_em_antendimento_Dermatologia=Dados_paciente_chamados_para_atendimento[2]
+        paciente_em_atendimento_Ortopedia=Dados_paciente_chamados_para_atendimento[0]
+        paciente_em_atendimento_Endocrinologia=Dados_paciente_chamados_para_atendimento[1]
+        paciente_em_atendimento_Dermatologia=Dados_paciente_chamados_para_atendimento[2]
         hora_atendimento_Dermatologia=Dados_paciente_chamados_para_atendimento[3]
         minuto_atendimento_Dermatologia=Dados_paciente_chamados_para_atendimento[4]
         hora_atendimento_Endocrinologia=Dados_paciente_chamados_para_atendimento[5]
@@ -137,6 +137,8 @@ while(opcao!=9):
         listaEsperaPacienteComumOrtopedia=Dados_paciente_chamados_para_atendimento[13]
         listaEsperaPacientePrioritarioOrtopedia=Dados_paciente_chamados_para_atendimento[14]
         dados_Pacientes=Dados_paciente_chamados_para_atendimento[15]
+
+        '''
         #O bloco de codigo abaixo é para inserir a data de inicio da consulta de um usuario no dicionario de dados
         if(len(paciente_em_antendimento_Ortopedia)==8):
             dados_Pacientes[paciente_em_antendimento_Ortopedia[5]].append(paciente_em_antendimento_Ortopedia[6])
@@ -150,7 +152,7 @@ while(opcao!=9):
             dados_Pacientes[paciente_em_antendimento_Dermatologia[5]].append(paciente_em_antendimento_Dermatologia[6])
             dados_Pacientes[paciente_em_antendimento_Dermatologia[5]].append(paciente_em_antendimento_Dermatologia[7])
             print('Paciente em atendimento, senha: ', dados_Pacientes[paciente_em_antendimento_Dermatologia[5]])
-
+        '''
 
 
     elif(opcao==3):
@@ -182,14 +184,14 @@ while(opcao!=9):
                 print("Impossível pular paciente pois ele não está na lista de espera")
 
     elif(opcao==4):
-        Dados_pacientes_atendidos=(EncerrarConsulta(paciente_em_antendimento_Dermatologia, paciente_em_antendimento_Endocrinologia,
-                         paciente_em_antendimento_Ortopedia, listaPacienteComumAtendidoDermatologia,
+        Dados_pacientes_atendidos=(EncerrarConsulta(paciente_em_atendimento_Dermatologia, paciente_em_atendimento_Endocrinologia,
+                         paciente_em_atendimento_Ortopedia, listaPacienteComumAtendidoDermatologia,
                          listaPacienteComumAtendidoEndocrinologia, listaPacienteComumAtendidoOrtopedia,
                          listaPacientePrioritarioAtendidoDermatologia, listaPacientePrioritarioAtendidoEndocrinologia,
                          listaPacientePrioritarioAtendidoOrtopedia, dados_Pacientes))
-        paciente_em_antendimento_Dermatologia=Dados_pacientes_atendidos[0]
-        paciente_em_antendimento_Endocrinologia=Dados_pacientes_atendidos[1]
-        paciente_em_antendimento_Ortopedia=Dados_pacientes_atendidos[2]
+        paciente_em_atendimento_Dermatologia=Dados_pacientes_atendidos[0]
+        paciente_em_atendimento_Endocrinologia=Dados_pacientes_atendidos[1]
+        paciente_em_atendimento_Ortopedia=Dados_pacientes_atendidos[2]
         listaPacienteComumAtendidoDermatologia=Dados_pacientes_atendidos[3]
         listaPacienteComumAtendidoEndocrinologia=Dados_pacientes_atendidos[4]
         listaPacienteComumAtendidoOrtopedia=Dados_pacientes_atendidos[5]
@@ -199,9 +201,15 @@ while(opcao!=9):
         dados_Pacientes=Dados_pacientes_atendidos[9]
         print("Consulta finalizada!!")
     elif(opcao==5):
-        ExibirFilaDeEspera()
+        ExibirFilaDeEspera(paciente_em_atendimento_Dermatologia, paciente_em_atendimento_Endocrinologia,
+                            paciente_em_atendimento_Ortopedia, listaEsperaPacienteComumDermatologia,
+                            listaEsperaPacientePrioritarioDermatologia, listaEsperaPacienteComumEndocrinologia,
+                            listaEsperaPacientePrioritarioEndocrinologia, listaEsperaPacienteComumOrtopedia,
+                            listaEsperaPacientePrioritarioOrtopedia)
     elif(opcao==6):
-        ExibirPacientesAtendidosNoDia()
+        ExibirPacientesAtendidosNoDia(listaPacienteComumAtendidoDermatologia, listaPacienteComumAtendidoEndocrinologia,
+                                      listaPacienteComumAtendidoOrtopedia, listaPacientePrioritarioAtendidoDermatologia,
+                                      listaPacientePrioritarioAtendidoEndocrinologia,listaPacientePrioritarioAtendidoOrtopedia)
     elif(opcao==7):
         ExibirTempoMedioDeEsperaDosPacientes()
     elif(opcao==8):
