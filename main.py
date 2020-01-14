@@ -10,52 +10,50 @@ do código, e estou ciente que estes trechos não serão considerados para fins 
 '''
 from Funcoes import *;
 
-opcao=0
-contadorcomumDermatologia=1
-contadorpreferencialDermatologia=1
+opcao = 0
+contadorcomumDermatologia = 1
+contadorpreferencialDermatologia = 1
 
-contadorcomumEndocrinologia=1
-contadorpreferencialEndocrinologia=1
+contadorcomumEndocrinologia = 1
+contadorpreferencialEndocrinologia = 1
 
-dados_Pacientes={}
-contadorcomumOrtopedia=1
-contadorpreferencialOrtopedia=1
-#Listas com o cadastro de todos os pacientes
-'''listaPacienteComumDermatologia=[]
-listaPacientePrioritarioDermatologia=[]
+dados_Pacientes = {}
 
-listaPacienteComumEndocrinologia=[]
-listaPacientePrioritarioEndocrinologia=[]
+contadorcomumOrtopedia = 1
+contadorpreferencialOrtopedia = 1
 
-listaPacienteComumOrtopedia=[]
-listaPacientePrioritarioOrtopedia=[]
-#Fim do codigo com as lista
-'''
 #Listas de espera do consultório
-listaEsperaPacienteComumDermatologia=[]
-listaEsperaPacientePrioritarioDermatologia=[]
+listaEsperaPacienteComumDermatologia = []
+listaEsperaPacientePrioritarioDermatologia = []
 
-listaEsperaPacienteComumEndocrinologia=[]
-listaEsperaPacientePrioritarioEndocrinologia=[]
+listaEsperaPacienteComumEndocrinologia = []
+listaEsperaPacientePrioritarioEndocrinologia = []
 
-listaEsperaPacienteComumOrtopedia=[]
-listaEsperaPacientePrioritarioOrtopedia=[]
+listaEsperaPacienteComumOrtopedia = []
+listaEsperaPacientePrioritarioOrtopedia = []
 #Fim do código com as listas
 
 #Listas de pacientes atendidos do consultório
-listaPacienteComumAtendidoDermatologia=[]
-listaPacientePrioritarioAtendidoDermatologia=[]
+listaPacienteComumAtendidoDermatologia = []
+listaPacientePrioritarioAtendidoDermatologia = []
 
-listaPacienteComumAtendidoEndocrinologia=[]
-listaPacientePrioritarioAtendidoEndocrinologia=[]
+listaPacienteComumAtendidoEndocrinologia = []
+listaPacientePrioritarioAtendidoEndocrinologia = []
 
-listaPacienteComumAtendidoOrtopedia=[]
-listaPacientePrioritarioAtendidoOrtopedia=[]
+listaPacienteComumAtendidoOrtopedia = []
+listaPacientePrioritarioAtendidoOrtopedia = []
 
-paciente_em_atendimento_Dermatologia=[]
-paciente_em_atendimento_Endocrinologia=[]
-paciente_em_atendimento_Ortopedia=[]
+paciente_em_atendimento_Dermatologia = []
+paciente_em_atendimento_Endocrinologia = []
+paciente_em_atendimento_Ortopedia = []
 
+ultimo_paciente_chamado_dermatologia = []
+ultimo_paciente_chamado_endocrinologia = []
+ultimo_paciente_chamado_ortopedia = []
+
+ordem_chegada_dermatologia = []
+ordem_chegada_endocrinologia = []
+ordem_chegada_ortopedia = []
 
 while(opcao!=9):
     MENU()
@@ -74,32 +72,35 @@ while(opcao!=9):
             if(pacientes[4]=="d" or pacientes[4]=="D"):
 
                 listaEsperaPacienteComumDermatologia.append(pacientes)
+                ordem_chegada_dermatologia.append(pacientes)
                 contadorcomumDermatologia+=1
             elif(pacientes[4]=="e" or pacientes[4]=="E"):
 
                 listaEsperaPacienteComumEndocrinologia.append(pacientes)
+                ordem_chegada_endocrinologia.append(pacientes)
                 contadorcomumEndocrinologia+=1
             elif(pacientes[4]=="O" or pacientes[4]=="o"):
 
               listaEsperaPacienteComumOrtopedia.append(pacientes)
+              ordem_chegada_ortopedia.append(pacientes)
               contadorcomumOrtopedia+=1
 
         elif(pacientes[0]=="p" or pacientes[0]=="P"):
             if(pacientes[4]=="d" or pacientes[4]=="D"):
 
               listaEsperaPacientePrioritarioDermatologia.append(pacientes)
+              ordem_chegada_dermatologia.append(pacientes)
               contadorpreferencialDermatologia+=1
             elif(pacientes[4]=="e" or pacientes[4]=="E"):
 
               listaEsperaPacientePrioritarioEndocrinologia.append(pacientes)
+              ordem_chegada_endocrinologia.append(pacientes)
               contadorpreferencialEndocrinologia+=1
             elif(pacientes[4]=="O" or pacientes[4]=="o"):
 
               listaEsperaPacientePrioritarioOrtopedia.append(pacientes)
+              ordem_chegada_ortopedia.append(pacientes)
               contadorpreferencialOrtopedia+=1
-
-
-        print(dados_Pacientes)
 
     elif(opcao==2):
 
@@ -117,7 +118,10 @@ while(opcao!=9):
                                                   listaEsperaPacientePrioritarioOrtopedia, tamComumDermatologiaAtendido,
                                                   tamComumEndocrinologiaAtendido, tamComumOrtopediaAtendido,
                                                   tamPrioritarioDermatologiaAtendido, tamPrioritarioEndocrinologiaAtendido,
-                                                  tamPrioritarioOrtopediaAtendido, dados_Pacientes))
+                                                  tamPrioritarioOrtopediaAtendido, ultimo_paciente_chamado_dermatologia,
+                                                  ultimo_paciente_chamado_endocrinologia, ultimo_paciente_chamado_ortopedia,
+                                                  ordem_chegada_dermatologia, ordem_chegada_endocrinologia,
+                                                  ordem_chegada_ortopedia, dados_Pacientes))
 
         #A função chamada acima retorna varios valores, então  necessário fazer o desempacotamento desses dados,
         #o desempacotamento está sendo feito no trecho de código abaixo
@@ -137,23 +141,9 @@ while(opcao!=9):
         listaEsperaPacienteComumOrtopedia=Dados_paciente_chamados_para_atendimento[13]
         listaEsperaPacientePrioritarioOrtopedia=Dados_paciente_chamados_para_atendimento[14]
         dados_Pacientes=Dados_paciente_chamados_para_atendimento[15]
-
-        '''
-        #O bloco de codigo abaixo é para inserir a data de inicio da consulta de um usuario no dicionario de dados
-        if(len(paciente_em_antendimento_Ortopedia)==8):
-            dados_Pacientes[paciente_em_antendimento_Ortopedia[5]].append(paciente_em_antendimento_Ortopedia[6])
-            dados_Pacientes[paciente_em_antendimento_Ortopedia[5]].append(paciente_em_antendimento_Ortopedia[7])
-            print('Paciente em atendimento, senha: ', dados_Pacientes[paciente_em_antendimento_Ortopedia[5]])
-        if(len(paciente_em_antendimento_Endocrinologia)==8):
-            dados_Pacientes[paciente_em_antendimento_Endocrinologia[5]].append(paciente_em_antendimento_Endocrinologia[6])
-            dados_Pacientes[paciente_em_antendimento_Endocrinologia[5]].append(paciente_em_antendimento_Endocrinologia[7])
-            print('Paciente em atendimento, senha: ', dados_Pacientes[paciente_em_antendimento_Endocrinologia[5]])
-        if(len(paciente_em_antendimento_Dermatologia)==8):
-            dados_Pacientes[paciente_em_antendimento_Dermatologia[5]].append(paciente_em_antendimento_Dermatologia[6])
-            dados_Pacientes[paciente_em_antendimento_Dermatologia[5]].append(paciente_em_antendimento_Dermatologia[7])
-            print('Paciente em atendimento, senha: ', dados_Pacientes[paciente_em_antendimento_Dermatologia[5]])
-        '''
-
+        ultimo_paciente_chamado_dermatologia = Dados_paciente_chamados_para_atendimento[16]
+        ultimo_paciente_chamado_endocrinologia = Dados_paciente_chamados_para_atendimento[17]
+        ultimo_paciente_chamado_ortopedia = Dados_paciente_chamados_para_atendimento[18]
 
     elif(opcao==3):
         for senha, paciente in dados_Pacientes.items():
@@ -199,18 +189,23 @@ while(opcao!=9):
         listaPacientePrioritarioAtendidoEndocrinologia=Dados_pacientes_atendidos[7]
         listaPacientePrioritarioAtendidoOrtopedia=Dados_pacientes_atendidos[8]
         dados_Pacientes=Dados_pacientes_atendidos[9]
-        print("Consulta finalizada!!")
     elif(opcao==5):
         ExibirFilaDeEspera(paciente_em_atendimento_Dermatologia, paciente_em_atendimento_Endocrinologia,
-                            paciente_em_atendimento_Ortopedia, listaEsperaPacienteComumDermatologia,
-                            listaEsperaPacientePrioritarioDermatologia, listaEsperaPacienteComumEndocrinologia,
-                            listaEsperaPacientePrioritarioEndocrinologia, listaEsperaPacienteComumOrtopedia,
-                            listaEsperaPacientePrioritarioOrtopedia)
+                           paciente_em_atendimento_Ortopedia, listaEsperaPacienteComumDermatologia,
+                           listaEsperaPacientePrioritarioDermatologia, listaEsperaPacienteComumEndocrinologia,
+                           listaEsperaPacientePrioritarioEndocrinologia, listaEsperaPacienteComumOrtopedia,
+                           listaEsperaPacientePrioritarioOrtopedia)
     elif(opcao==6):
         ExibirPacientesAtendidosNoDia(listaPacienteComumAtendidoDermatologia, listaPacienteComumAtendidoEndocrinologia,
                                       listaPacienteComumAtendidoOrtopedia, listaPacientePrioritarioAtendidoDermatologia,
                                       listaPacientePrioritarioAtendidoEndocrinologia,listaPacientePrioritarioAtendidoOrtopedia)
     elif(opcao==7):
-        ExibirTempoMedioDeEsperaDosPacientes()
+        ExibirTempoMedioDeEsperaDosPacientes(listaPacienteComumAtendidoDermatologia, listaPacienteComumAtendidoEndocrinologia,
+                                             listaPacienteComumAtendidoOrtopedia, listaPacientePrioritarioAtendidoDermatologia,
+                                             listaPacientePrioritarioAtendidoEndocrinologia, listaPacientePrioritarioAtendidoOrtopedia,
+                                             paciente_em_atendimento_Dermatologia, paciente_em_atendimento_Endocrinologia,
+                                             paciente_em_atendimento_Ortopedia)
     elif(opcao==8):
-        ExibirTempoMedioDeAtendimentoDosPacientes()
+        ExibirTempoMedioDeAtendimentoDosPacientes(listaPacienteComumAtendidoDermatologia, listaPacienteComumAtendidoEndocrinologia,
+                                                  listaPacienteComumAtendidoOrtopedia, listaPacientePrioritarioAtendidoDermatologia,
+                                                  listaPacientePrioritarioAtendidoEndocrinologia, listaPacientePrioritarioAtendidoOrtopedia)

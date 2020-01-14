@@ -84,9 +84,9 @@ def SolicitarHora():
     while True:
         while(boolhora):
             hora=int(hora)
-            if(hora<=0 or hora>24):
+            if(hora<0 or hora>=24):
                 hora=input("Hora inserida inválida para inserir o horário você deve primeiro digitar a hora ex: são 12:40,\n"
-                       "então você deve digitar 12 e apertar enter. OBS.: 0<=hora<=24\n")
+                       "então você deve digitar 12 e apertar enter. OBS.: 0<=hora<24\n")
                 boolhora=VerificarInt(hora)
             else:
                 boolh=True
@@ -107,9 +107,9 @@ def SolicitarMinuto():
     while True:
         while(boolminuto):
             minuto=int(minuto)
-            if(minuto<0 or minuto>60):
+            if(minuto<0 or minuto>=60):
                 minuto=input("Minuto inserido inválido para inserir o minuto você deve digitar o minuto ex: são 12:40,\n"
-                       "então você deve digitar 40 e apertar enter. OBS.: 0<=minuto<=60\n")
+                       "então você deve digitar 40 e apertar enter. OBS.: 0<=minuto<60\n")
                 boolminuto=VerificarInt(minuto)
             else:
                 boolm=True
@@ -147,7 +147,7 @@ def VariacaoDeTempo(hora_inicio, minuto_inicio, hora_final, minuto_final):
     minuto_inicio=minuto_inicio+(hora_inicio*60)
     minuto_final=minuto_final+(hora_final*60)
     variacao=0
-    if(minuto_final>minuto_inicio):
+    if(minuto_final>=minuto_inicio):
         variacao=minuto_final-minuto_inicio
     else:
         variacao=(24*60-minuto_inicio)+minuto_final
@@ -200,6 +200,56 @@ def Gerar_Tabela_Pacientes_Em_Atendimento(tabela, lista_Pacientes_Atendimento):
             tabela.add_row([lista_Pacientes_Atendimento[5], lista_Pacientes_Atendimento[1], "Ortopedia", "Em atendimento", tempo_espera_na_fila])
 
     return tabela
+
+def CalculaTempoTotalDeEspera(hora_total, minuto_total, listaAtendidos):
+    hora_inicial = 0
+    minuto_inicial = 0
+    hora_final = 0
+    minuto_final = 0
+    for i in range(len(listaAtendidos)):
+        hora_inicial+=listaAtendidos[i][2]
+        minuto_inicial+=listaAtendidos[i][3]
+        hora_final+=listaAtendidos[i][6]
+        minuto_final+=listaAtendidos[i][7]
+
+    variacao_hora_total, variacao_minuto_total = VariacaoDeTempo(hora_inicial, minuto_inicial, hora_final, minuto_final)
+    hora_total+=variacao_hora_total
+    minuto_total+=variacao_minuto_total
+    return hora_total, minuto_total
+
+
+def CalculaTempoTotalDeAtendimento(hora_total, minuto_total, listaAtendidos):
+    hora_inicial = 0
+    minuto_inicial = 0
+    hora_final = 0
+    minuto_final = 0
+    for i in range(len(listaAtendidos)):
+        hora_inicial+=listaAtendidos[i][6]
+        minuto_inicial+=listaAtendidos[i][7]
+        hora_final+=listaAtendidos[i][8]
+        minuto_final+=listaAtendidos[i][9]
+
+    variacao_hora_total, variacao_minuto_total = VariacaoDeTempo(hora_inicial, minuto_inicial, hora_final, minuto_final)
+    hora_total+=variacao_hora_total
+    minuto_total+=variacao_minuto_total
+    return hora_total, minuto_total
+
+def CalculaMedia(tempo, quantidade):
+    if(quantidade):
+        media=tempo/quantidade
+        return media
+    else:
+        return 0
+def Formatarhora(tempoEmMinutos):
+    if((tempoEmMinutos//60 == 0) and ((tempoEmMinutos%60)//1 == 0) and (((tempoEmMinutos%60)%1)*60 == 0)):
+        hora_formatada = "--------------"
+    elif(tempoEmMinutos//60==0):
+        hora_formatada = \
+            str((tempoEmMinutos%60)//1)+" min : "+str(((tempoEmMinutos%60)%1)*60)+" s"
+    else:
+        hora_formatada = \
+            str(tempoEmMinutos//60)+" h : "+str((tempoEmMinutos%60)//1)+" min : "+str(((tempoEmMinutos%60)%1)*60)+" s"
+    return hora_formatada
 
 #Esta função serve para imprimir o menu
 def MENU():
@@ -255,7 +305,10 @@ def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, pacient
                                   listaEsperaPacientePrioritarioOrtopedia, tamComumDermatologiaAtendido,
                                   tamComumEndocrinologiaAtendido, tamComumOrtopediaAtendido,
                                   tamPrioritarioDermatologiaAtendido, tamPrioritarioEndocrinologiaAtendido,
-                                  tamPrioritarioOrtopediaAtendido, dados_Pacientes):
+                                  tamPrioritarioOrtopediaAtendido, ultimo_paciente_chamado_dermatologia,
+                                  ultimo_paciente_chamado_endocrinologia, ultimo_paciente_chamado_ortopedia,
+                                  ordem_chegada_dermatologia, ordem_chegada_endocrinologia,
+                                  ordem_chegada_ortopedia, dados_Pacientes):
 
     opcao=0
     hora_atendimento_Dermatologia=0
@@ -279,147 +332,162 @@ def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, pacient
 
         if(opcao=="1"):
             while(comparecimento=="n" or comparecimento=="N"):
+                comparecimento=" "
                 if(not paciente_em_antendimento_Dermatologia and
                         (listaEsperaPacientePrioritarioDermatologia or listaEsperaPacienteComumDermatologia)):
-
-                    if((tamComumDermatologiaAtendido>=tamPrioritarioDermatologiaAtendido and listaEsperaPacientePrioritarioDermatologia) or not listaEsperaPacienteComumDermatologia):
+                    if((tamComumDermatologiaAtendido>=tamPrioritarioDermatologiaAtendido and listaEsperaPacientePrioritarioDermatologia) or
+                            (not listaEsperaPacienteComumDermatologia and listaEsperaPacientePrioritarioDermatologia)):
                         print("Próxima senha do consultório de DERMATOLOGIA:")
                         print(listaEsperaPacientePrioritarioDermatologia[0][5], "-", listaEsperaPacientePrioritarioDermatologia[0][1],
                               "- Consultório de Dermatologia")
-                        comparecimento=input("O paciente compareceu? Digite 'N' para pular o paciente e chamar o proximo. "
-                                    "Digite 'S' para continuar com o atendimento")
-                        if(comparecimento=="S" or comparecimento=="s"):
-                            paciente_em_antendimento_Dermatologia=listaEsperaPacientePrioritarioDermatologia[0]
-                            hora_atendimento_Dermatologia=SolicitarHora()
-                            minuto_atendimento_Dermatologia=SolicitarMinuto()
-                            paciente_em_antendimento_Dermatologia.append(hora_atendimento_Dermatologia)
-                            paciente_em_antendimento_Dermatologia.append(minuto_atendimento_Dermatologia)
-                            listaEsperaPacientePrioritarioDermatologia.pop(0)
-                        else:
-                            dados_Pacientes, listaEsperaPacientePrioritarioDermatologia=\
-                                PularPaciente(dados_Pacientes, listaEsperaPacientePrioritarioDermatologia[0][5],
-                                              listaEsperaPacientePrioritarioDermatologia)
+
+                        while(comparecimento!="n" and comparecimento!="N" and comparecimento!="s" and comparecimento!="S"):
+                            comparecimento=input("O paciente compareceu? Digite 'N' para pular o paciente e chamar o proximo. "
+                                        "Digite 'S' para continuar com o atendimento\n")
+                            if(comparecimento=="S" or comparecimento=="s"):
+                                paciente_em_antendimento_Dermatologia=listaEsperaPacientePrioritarioDermatologia[0]
+                                hora_atendimento_Dermatologia=SolicitarHora()
+                                minuto_atendimento_Dermatologia=SolicitarMinuto()
+                                paciente_em_antendimento_Dermatologia.append(hora_atendimento_Dermatologia)
+                                paciente_em_antendimento_Dermatologia.append(minuto_atendimento_Dermatologia)
+                                listaEsperaPacientePrioritarioDermatologia.pop(0)
+                            elif(comparecimento=="n" or comparecimento=="N"):
+                                dados_Pacientes, listaEsperaPacientePrioritarioDermatologia=\
+                                    PularPaciente(dados_Pacientes, listaEsperaPacientePrioritarioDermatologia[0][5],
+                                                  listaEsperaPacientePrioritarioDermatologia)
 
                     elif(listaEsperaPacienteComumDermatologia):
                         print("Próxima senha do consultório de DERMATOLOGIA:")
                         print(listaEsperaPacienteComumDermatologia[0][5], "-", listaEsperaPacienteComumDermatologia[0][1],
                               "- Consultório de Dermatologia")
-                        comparecimento=input("O paciente compareceu? Digite 'N' para pular o paciente e chamar o próximo. "
-                                    "Digite 'S' para continuar com o atendimento")
-                        if(comparecimento=="S" or comparecimento=="s"):
-                            paciente_em_antendimento_Dermatologia=listaEsperaPacienteComumDermatologia[0]
-                            hora_atendimento_Dermatologia=SolicitarHora()
-                            minuto_atendimento_Dermatologia=SolicitarMinuto()
-                            paciente_em_antendimento_Dermatologia.append(hora_atendimento_Dermatologia)
-                            paciente_em_antendimento_Dermatologia.append(minuto_atendimento_Dermatologia)
-                            listaEsperaPacienteComumDermatologia.pop(0)
-                        else:
-                            dados_Pacientes, listaEsperaPacienteComumDermatologia=\
-                                PularPaciente(dados_Pacientes,listaEsperaPacienteComumDermatologia[0][5],
-                                              listaEsperaPacienteComumDermatologia)
+                        while(comparecimento!="n" and comparecimento!="N" and comparecimento!="s" and comparecimento!="S"):
+                            comparecimento=input("O paciente compareceu? Digite 'N' para pular o paciente e chamar o próximo. "
+                                        "Digite 'S' para continuar com o atendimento\n")
+                            if(comparecimento=="S" or comparecimento=="s"):
+                                paciente_em_antendimento_Dermatologia=listaEsperaPacienteComumDermatologia[0]
+                                hora_atendimento_Dermatologia=SolicitarHora()
+                                minuto_atendimento_Dermatologia=SolicitarMinuto()
+                                paciente_em_antendimento_Dermatologia.append(hora_atendimento_Dermatologia)
+                                paciente_em_antendimento_Dermatologia.append(minuto_atendimento_Dermatologia)
+                                listaEsperaPacienteComumDermatologia.pop(0)
+                            elif(comparecimento=="n" or comparecimento=="N"):
+                                dados_Pacientes, listaEsperaPacienteComumDermatologia=\
+                                    PularPaciente(dados_Pacientes,listaEsperaPacienteComumDermatologia[0][5],
+                                                  listaEsperaPacienteComumDermatologia)
                 else:
                     print("Não há pacientes na lista de espera de dermatologia, ou já possui um paciente sendo atendido")
                     break
+            break
         elif(opcao=="2"):
-            while(comparecimento=="n" or comparecimento=="N"):
-                if(not paciente_em_antendimento_Endocrinologia and (listaEsperaPacienteComumEndocrinologia or
-                        listaEsperaPacientePrioritarioEndocrinologia)):
+            while(comparecimento == "n" or comparecimento == "N"):
+                comparecimento=""
+                if(not paciente_em_antendimento_Endocrinologia and (listaEsperaPacienteComumEndocrinologia
+                                                                    or listaEsperaPacientePrioritarioEndocrinologia)):
 
-                    if((tamComumEndocrinologiaAtendido>=tamPrioritarioEndocrinologiaAtendido and listaEsperaPacientePrioritarioEndocrinologia)
-                            or not listaEsperaPacienteComumEndocrinologia):
+                    if((tamComumEndocrinologiaAtendido >= tamPrioritarioEndocrinologiaAtendido and listaEsperaPacientePrioritarioEndocrinologia) or
+                            (not listaEsperaPacienteComumEndocrinologia and listaEsperaPacientePrioritarioEndocrinologia)):
                         print("Próxima senha do consultório de ENDOCRINOLOGIA:")
                         print(listaEsperaPacientePrioritarioEndocrinologia[0][5], "-" , listaEsperaPacientePrioritarioEndocrinologia[0][1],
                               "- Consultório de Endocrinologia")
-                        comparecimento=input("O paciente compareceu? Digite 'N' para pular o paciente e chamar o próximo. "
-                                    "Digite 'S' para continuar com o atendimento")
-                        if(comparecimento=="S" or comparecimento=="s"):
-                            paciente_em_antendimento_Endocrinologia=listaEsperaPacientePrioritarioEndocrinologia[0]
-                            hora_atendimento_Endocrinologia=SolicitarHora()
-                            minuto_atendimento_Endocrinologia=SolicitarMinuto()
-                            paciente_em_antendimento_Endocrinologia.append(hora_atendimento_Endocrinologia)
-                            paciente_em_antendimento_Endocrinologia.append(minuto_atendimento_Endocrinologia)
-                            listaEsperaPacientePrioritarioEndocrinologia.pop(0)
-                        else:
-                            dados_Pacientes, listaEsperaPacientePrioritarioEndocrinologia=\
-                                PularPaciente(dados_Pacientes, listaEsperaPacientePrioritarioEndocrinologia[0][5],
-                                              listaEsperaPacientePrioritarioEndocrinologia)
+                        while(comparecimento!="n" and comparecimento!="N" and comparecimento!="s" and comparecimento!="S"):
+                            comparecimento=input("O paciente compareceu? Digite 'N' para pular o paciente e chamar o próximo. "
+                                        "Digite 'S' para continuar com o atendimento\n")
+                            if(comparecimento=="S" or comparecimento=="s"):
+                                paciente_em_antendimento_Endocrinologia = listaEsperaPacientePrioritarioEndocrinologia[0]
+                                hora_atendimento_Endocrinologia = SolicitarHora()
+                                minuto_atendimento_Endocrinologia = SolicitarMinuto()
+                                paciente_em_antendimento_Endocrinologia.append(hora_atendimento_Endocrinologia)
+                                paciente_em_antendimento_Endocrinologia.append(minuto_atendimento_Endocrinologia)
+                                listaEsperaPacientePrioritarioEndocrinologia.pop(0)
+                            elif(comparecimento=="n" or comparecimento=="N"):
+                                dados_Pacientes, listaEsperaPacientePrioritarioEndocrinologia =\
+                                    PularPaciente(dados_Pacientes, listaEsperaPacientePrioritarioEndocrinologia[0][5],
+                                                  listaEsperaPacientePrioritarioEndocrinologia)
                     elif(listaEsperaPacienteComumEndocrinologia):
                         print("Próxima senha do consultório de ENDOCRINOLOGIA:")
                         print(listaEsperaPacienteComumEndocrinologia[0][5], "-", listaEsperaPacienteComumEndocrinologia[0][1],
                               "- Consultório de Endocrinologia")
-                        comparecimento=input("O paciente compareceu? Digite 'N' para pular o paciente e chamar o próximo. "
-                                    "Digite 'S' para continuar com o atendimento")
-                        if(comparecimento=="S" or comparecimento=="s"):
-                            paciente_em_antendimento_Endocrinologia=listaEsperaPacienteComumEndocrinologia[0]
-                            hora_atendimento_Endocrinologia=SolicitarHora()
-                            minuto_atendimento_Endocrinologia=SolicitarMinuto()
-                            paciente_em_antendimento_Endocrinologia.append(hora_atendimento_Endocrinologia)
-                            paciente_em_antendimento_Endocrinologia.append(minuto_atendimento_Endocrinologia)
-                            listaEsperaPacienteComumEndocrinologia.pop(0)
-                        else:
-                            dados_Pacientes, listaEsperaPacienteComumEndocrinologia=\
-                                PularPaciente(dados_Pacientes, listaEsperaPacienteComumEndocrinologia[0][5],
-                                              listaEsperaPacienteComumEndocrinologia)
+                        while(comparecimento!="n" and comparecimento!="N" and comparecimento!="s" and comparecimento!="S"):
+                            comparecimento=input("O paciente compareceu? Digite 'N' para pular o paciente e chamar o próximo. "
+                                        "Digite 'S' para continuar com o atendimento\n")
+                            if(comparecimento=="S" or comparecimento=="s"):
+                                paciente_em_antendimento_Endocrinologia=listaEsperaPacienteComumEndocrinologia[0]
+                                hora_atendimento_Endocrinologia=SolicitarHora()
+                                minuto_atendimento_Endocrinologia=SolicitarMinuto()
+                                paciente_em_antendimento_Endocrinologia.append(hora_atendimento_Endocrinologia)
+                                paciente_em_antendimento_Endocrinologia.append(minuto_atendimento_Endocrinologia)
+                                listaEsperaPacienteComumEndocrinologia.pop(0)
+                            elif(comparecimento=="n" or comparecimento=="N"):
+                                dados_Pacientes, listaEsperaPacienteComumEndocrinologia=\
+                                    PularPaciente(dados_Pacientes, listaEsperaPacienteComumEndocrinologia[0][5],
+                                                  listaEsperaPacienteComumEndocrinologia)
                 else:
                     print("Não há pacientes na lista de espera de endocrinologia, ou já possui um paciente sendo atendido")
                     break
+            break
         elif(opcao=="3"):
             while(comparecimento=="n" or comparecimento=="N"):
+                comparecimento=""
                 if(not paciente_em_antendimento_Ortopedia and (listaEsperaPacienteComumOrtopedia
                         or listaEsperaPacientePrioritarioOrtopedia)):
 
-                    if((tamComumOrtopediaAtendido>=tamPrioritarioOrtopediaAtendido and listaEsperaPacientePrioritarioOrtopedia) or not listaEsperaPacienteComumOrtopedia):
+                    if((tamComumOrtopediaAtendido >= tamPrioritarioOrtopediaAtendido and listaEsperaPacientePrioritarioOrtopedia) or
+                            (not listaEsperaPacienteComumOrtopedia and listaEsperaPacientePrioritarioOrtopedia)):
                         print("Próxima senha do consultório de ORTOPEDIA:")
                         print(listaEsperaPacientePrioritarioOrtopedia[0][5], "-", listaEsperaPacientePrioritarioOrtopedia[0][1],
                               "- Consultório de Ortopedia")
-                        comparecimento=input("O paciente compareceu? Digite 'N' para voltar ao menu e pular paciente. "
-                                    "Digite 'S' para continuar com o atendimento")
-                        if(comparecimento=="S" or comparecimento=="s"):
-                            paciente_em_antendimento_Ortopedia=listaEsperaPacientePrioritarioOrtopedia[0]
-                            hora_atendimento_Ortopedia=SolicitarHora()
-                            minuto_atendimento_Ortopedia=SolicitarMinuto()
-                            paciente_em_antendimento_Ortopedia.append(hora_atendimento_Ortopedia)
-                            paciente_em_antendimento_Ortopedia.append(minuto_atendimento_Ortopedia)
-                            listaEsperaPacientePrioritarioOrtopedia.pop(0)
-                        else:
-                            dados_Pacientes, listaEsperaPacientePrioritarioOrtopedia=\
-                                PularPaciente(dados_Pacientes, listaEsperaPacientePrioritarioOrtopedia[0][5],
-                                              listaEsperaPacientePrioritarioOrtopedia)
+                        while(comparecimento!="n" and comparecimento!="N" and comparecimento!="s" and comparecimento!="S"):
+                            comparecimento=input("O paciente compareceu? Digite 'N' para voltar ao menu e pular paciente. "
+                                                 "Digite 'S' para continuar com o atendimento\n")
+                            if(comparecimento == "S" or comparecimento == "s"):
+                                paciente_em_antendimento_Ortopedia = listaEsperaPacientePrioritarioOrtopedia[0]
+                                hora_atendimento_Ortopedia = SolicitarHora()
+                                minuto_atendimento_Ortopedia = SolicitarMinuto()
+                                paciente_em_antendimento_Ortopedia.append(hora_atendimento_Ortopedia)
+                                paciente_em_antendimento_Ortopedia.append(minuto_atendimento_Ortopedia)
+                                listaEsperaPacientePrioritarioOrtopedia.pop(0)
+                            elif(comparecimento=="n" or comparecimento=="N"):
+                                dados_Pacientes, listaEsperaPacientePrioritarioOrtopedia =\
+                                    PularPaciente(dados_Pacientes, listaEsperaPacientePrioritarioOrtopedia[0][5],
+                                                  listaEsperaPacientePrioritarioOrtopedia)
                     elif(listaEsperaPacienteComumOrtopedia):
                         print("Próxima senha do consultório de ORTOPEDIA:")
                         print(listaEsperaPacienteComumOrtopedia[0][5], "-", listaEsperaPacienteComumOrtopedia[0][1],
                               "- Consultório de Ortopedia")
-                        comparecimento=input("O paciente compareceu? Digite 'N' para voltar ao menu e pular paciente. "
-                                    "Digite 'S' para continuar com o atendimento")
-                        if(comparecimento=="S" or comparecimento=="s"):
-                            paciente_em_antendimento_Ortopedia=listaEsperaPacienteComumOrtopedia[0]
-                            hora_atendimento_Ortopedia=SolicitarHora()
-                            minuto_atendimento_Ortopedia=SolicitarMinuto()
-                            paciente_em_antendimento_Ortopedia.append(hora_atendimento_Ortopedia)
-                            paciente_em_antendimento_Ortopedia.append(minuto_atendimento_Ortopedia)
-                            listaEsperaPacienteComumOrtopedia.pop(0)
-                        else:
-                            dados_Pacientes, listaEsperaPacienteComumOrtopedia=\
-                                PularPaciente(dados_Pacientes, listaEsperaPacienteComumOrtopedia[0][5],
-                                              listaEsperaPacienteComumOrtopedia)
+                        while(comparecimento!="n" and comparecimento!="N" and comparecimento!="s" and comparecimento!="S"):
+                            comparecimento=input("O paciente compareceu? Digite 'N' para voltar ao menu e pular paciente. "
+                                        "Digite 'S' para continuar com o atendimento\n")
+                            if(comparecimento == "S" or comparecimento == "s"):
+                                paciente_em_antendimento_Ortopedia = listaEsperaPacienteComumOrtopedia[0]
+                                hora_atendimento_Ortopedia = SolicitarHora()
+                                minuto_atendimento_Ortopedia = SolicitarMinuto()
+                                paciente_em_antendimento_Ortopedia.append(hora_atendimento_Ortopedia)
+                                paciente_em_antendimento_Ortopedia.append(minuto_atendimento_Ortopedia)
+                                listaEsperaPacienteComumOrtopedia.pop(0)
+                            elif(comparecimento=="n" or comparecimento=="N"):
+                                dados_Pacientes, listaEsperaPacienteComumOrtopedia =\
+                                    PularPaciente(dados_Pacientes, listaEsperaPacienteComumOrtopedia[0][5],
+                                                  listaEsperaPacienteComumOrtopedia)
                 else:
                     print("Não há pacientes na lista de espera de ortopedia, ou já possui um paciente sendo atendido")
                     break
-        return paciente_em_antendimento_Ortopedia, paciente_em_antendimento_Endocrinologia, \
-               paciente_em_antendimento_Dermatologia, hora_atendimento_Dermatologia, \
-               minuto_atendimento_Dermatologia, hora_atendimento_Endocrinologia, \
-               minuto_atendimento_Endocrinologia, hora_atendimento_Ortopedia, \
-               minuto_atendimento_Ortopedia, listaEsperaPacienteComumDermatologia, \
-               listaEsperaPacientePrioritarioDermatologia, listaEsperaPacienteComumEndocrinologia, \
-               listaEsperaPacientePrioritarioEndocrinologia, listaEsperaPacienteComumOrtopedia, \
-               listaEsperaPacientePrioritarioOrtopedia, dados_Pacientes
+            break
+    return paciente_em_antendimento_Ortopedia, paciente_em_antendimento_Endocrinologia, \
+           paciente_em_antendimento_Dermatologia, hora_atendimento_Dermatologia, \
+           minuto_atendimento_Dermatologia, hora_atendimento_Endocrinologia, \
+           minuto_atendimento_Endocrinologia, hora_atendimento_Ortopedia, \
+           minuto_atendimento_Ortopedia, listaEsperaPacienteComumDermatologia, \
+           listaEsperaPacientePrioritarioDermatologia, listaEsperaPacienteComumEndocrinologia, \
+           listaEsperaPacientePrioritarioEndocrinologia, listaEsperaPacienteComumOrtopedia, \
+           listaEsperaPacientePrioritarioOrtopedia, dados_Pacientes, ultimo_paciente_chamado_dermatologia, \
+           ultimo_paciente_chamado_endocrinologia, ultimo_paciente_chamado_ortopedia
 
 
 def PularPaciente(dados_Pacientes, excluir_Paciente, listaEspera):
 
     del dados_Pacientes[excluir_Paciente]
-    for i in range (len(listaEspera)):
-        if(listaEspera[i][5]==excluir_Paciente):
+    for i in range(len(listaEspera)):
+        if(listaEspera[i][5] == excluir_Paciente):
             listaEspera.pop(i)
             break
     print("Paciente excluido do banco de dados")
@@ -509,8 +577,6 @@ def EncerrarConsulta(paciente_em_antendimento_Dermatologia, paciente_em_antendim
            listaPacientePrioritarioAtendidoDermatologia, listaPacientePrioritarioAtendidoEndocrinologia,\
            listaPacientePrioritarioAtendidoOrtopedia, dados_Pacientes
 
-
-
 def ExibirFilaDeEspera(paciente_em_atendimento_Dermatologia, paciente_em_antendimento_Endocrinologia,
                         paciente_em_antendimento_Ortopedia, listaEsperaPacienteComumDermatologia,
                         listaEsperaPacientePrioritarioDermatologia, listaEsperaPacienteComumEndocrinologia,
@@ -519,153 +585,458 @@ def ExibirFilaDeEspera(paciente_em_atendimento_Dermatologia, paciente_em_antendi
     hora=SolicitarHora()
     minuto=SolicitarMinuto()
     from prettytable import PrettyTable
-    x = PrettyTable(["Senha", "Nome do paciente", "Consultório", "Situação", "Tempo de espera"])
+    tabela = PrettyTable(["Senha", "Nome do paciente", "Consultório", "Situação", "Tempo de espera"])
 
     # Alinha as colunas
-    x.align["Senha"] = "l"
-    x.align["Nome do paciente"] = "l"
-    x.align["Consultório"]="r"
-    x.align["Situação"] = "r"
-    x.align["Tempo de espera"] = "r"
+    tabela.align["Senha"] = "l"
+    tabela.align["Nome do paciente"] = "l"
+    tabela.align["Consultório"]="l"
+    tabela.align["Situação"] = "l"
+    tabela.align["Tempo de espera"] = "l"
 
     # Deixa um espaço entre a borda das colunas e o conteúdo (default)
-    x.padding_width = 1
-    '''
-    #Inserindo na tabela listas de espera de dermatologia
-    if(paciente_em_atendimento_Dermatologia):
-        hora_total, minuto_total=VariacaoDeTempo(paciente_em_atendimento_Dermatologia[2], paciente_em_atendimento_Dermatologia[3],
-                                                 paciente_em_atendimento_Dermatologia[6], paciente_em_atendimento_Dermatologia[7])
-        horaFormatada=str(hora_total)+" h : "+str(minuto_total)+" min"
+    tabela.padding_width = 1
 
-        x.add_row([paciente_em_atendimento_Dermatologia[5], paciente_em_atendimento_Dermatologia[1], "Dermatologia", "Em atendimento", horaFormatada])
-    for i in range(len(listaEsperaPacientePrioritarioDermatologia)):
-        hora_total, minuto_total=VariacaoDeTempo(listaEsperaPacientePrioritarioDermatologia[i][2], listaEsperaPacientePrioritarioDermatologia[i][3],
-                                                 hora, minuto)
-        horaFormatada=str(hora_total)+" h : "+str(minuto_total)+" min"
-        x.add_row([listaEsperaPacientePrioritarioDermatologia[i][5], listaEsperaPacientePrioritarioDermatologia[i][1], "Dermatologia", "Em espera", horaFormatada])
-    for i in range(len(listaEsperaPacienteComumDermatologia)):
-        hora_total, minuto_total=VariacaoDeTempo(listaEsperaPacienteComumDermatologia[i][2], listaEsperaPacienteComumDermatologia[i][3],
-                                                 hora, minuto)
-        horaFormatada=str(hora_total)+" h : "+str(minuto_total)+" min"
-        x.add_row([listaEsperaPacienteComumDermatologia[i][5], listaEsperaPacienteComumDermatologia[i][1], "Dermatologia", "Em espera", horaFormatada])
-
-    #Inserindo na tabela listas de espera de Endocrinologia
-    if(paciente_em_antendimento_Endocrinologia):
-        hora_total, minuto_total=VariacaoDeTempo(paciente_em_antendimento_Endocrinologia[2], paciente_em_antendimento_Endocrinologia[3],
-                                                 paciente_em_antendimento_Endocrinologia[6], paciente_em_antendimento_Endocrinologia[7])
-        horaFormatada=str(hora_total)+" h : "+str(minuto_total)+" min"
-
-        x.add_row([paciente_em_antendimento_Endocrinologia[5], paciente_em_antendimento_Endocrinologia[1], "Endocrinologia", "Em atendimento", horaFormatada])
-    for i in range(len(listaEsperaPacientePrioritarioEndocrinologia)):
-        hora_total, minuto_total=VariacaoDeTempo(listaEsperaPacientePrioritarioEndocrinologia[i][2], listaEsperaPacientePrioritarioEndocrinologia[i][3],
-                                                 hora, minuto)
-        horaFormatada=str(hora_total)+" h : "+str(minuto_total)+" min"
-        x.add_row([listaEsperaPacientePrioritarioEndocrinologia[i][5], listaEsperaPacientePrioritarioEndocrinologia[i][1], "Endocrinologia", "Em espera", horaFormatada])
-    for i in range(len(listaEsperaPacienteComumEndocrinologia)):
-        hora_total, minuto_total=VariacaoDeTempo(listaEsperaPacienteComumEndocrinologia[i][2], listaEsperaPacienteComumEndocrinologia[i][3],
-                                                 hora, minuto)
-        horaFormatada=str(hora_total)+" h : "+str(minuto_total)+" min"
-        x.add_row([listaEsperaPacienteComumEndocrinologia[i][5], listaEsperaPacienteComumEndocrinologia[i][1], "Endocrinologia", "Em espera", horaFormatada])
-
-    #Inserindo na tabela listas de espera de Ortopedia
-    if(paciente_em_antendimento_Ortopedia):
-        hora_total, minuto_total=VariacaoDeTempo(paciente_em_antendimento_Ortopedia[2], paciente_em_antendimento_Ortopedia[3],
-                                                 paciente_em_antendimento_Ortopedia[6], paciente_em_antendimento_Ortopedia[7])
-        horaFormatada=str(hora_total)+" h : "+str(minuto_total)+" min"
-
-        x.add_row([paciente_em_antendimento_Ortopedia[5], paciente_em_antendimento_Ortopedia[1], "Ortopedia", "Em atendimento", horaFormatada])
-    for i in range(len(listaEsperaPacientePrioritarioOrtopedia)):
-        hora_total, minuto_total=VariacaoDeTempo(listaEsperaPacientePrioritarioOrtopedia[i][2], listaEsperaPacientePrioritarioOrtopedia[i][3],
-                                                 hora, minuto)
-        horaFormatada=str(hora_total)+" h : "+str(minuto_total)+" min"
-        x.add_row([listaEsperaPacientePrioritarioOrtopedia[i][5], listaEsperaPacientePrioritarioOrtopedia[i][1], "Ortopedia", "Em espera", horaFormatada])
-    for i in range(len(listaEsperaPacienteComumOrtopedia)):
-        hora_total, minuto_total=VariacaoDeTempo(listaEsperaPacienteComumOrtopedia[i][2], listaEsperaPacienteComumOrtopedia[i][3],
-                                                 hora, minuto)
-        horaFormatada=str(hora_total)+" h : "+str(minuto_total)+" min"
-        x.add_row([listaEsperaPacienteComumOrtopedia[i][5], listaEsperaPacienteComumOrtopedia[i][1], "Ortopedia", "Em espera", horaFormatada])
-        '''
-    x=Gerar_Tabela_Pacientes_Em_Atendimento(x, paciente_em_atendimento_Dermatologia)
-    x=Gerar_Tabela_Pacientes_Em_Espera(x, listaEsperaPacienteComumDermatologia, hora, minuto)
-    x=Gerar_Tabela_Pacientes_Em_Espera(x, listaEsperaPacientePrioritarioDermatologia, hora, minuto)
-    x=Gerar_Tabela_Pacientes_Em_Atendimento(x, paciente_em_antendimento_Endocrinologia)
-    x=Gerar_Tabela_Pacientes_Em_Espera(x, listaEsperaPacienteComumEndocrinologia, hora, minuto)
-    x=Gerar_Tabela_Pacientes_Em_Espera(x, listaEsperaPacientePrioritarioEndocrinologia, hora, minuto)
-    x=Gerar_Tabela_Pacientes_Em_Atendimento(x, paciente_em_antendimento_Ortopedia)
-    x=Gerar_Tabela_Pacientes_Em_Espera(x, listaEsperaPacienteComumOrtopedia, hora, minuto)
-    x=Gerar_Tabela_Pacientes_Em_Espera(x, listaEsperaPacientePrioritarioOrtopedia, hora, minuto)
-    print(x)
+    tabela=Gerar_Tabela_Pacientes_Em_Atendimento(tabela, paciente_em_atendimento_Dermatologia)
+    tabela=Gerar_Tabela_Pacientes_Em_Espera(tabela, listaEsperaPacienteComumDermatologia, hora, minuto)
+    tabela=Gerar_Tabela_Pacientes_Em_Espera(tabela, listaEsperaPacientePrioritarioDermatologia, hora, minuto)
+    tabela=Gerar_Tabela_Pacientes_Em_Atendimento(tabela, paciente_em_antendimento_Endocrinologia)
+    tabela=Gerar_Tabela_Pacientes_Em_Espera(tabela, listaEsperaPacienteComumEndocrinologia, hora, minuto)
+    tabela=Gerar_Tabela_Pacientes_Em_Espera(tabela, listaEsperaPacientePrioritarioEndocrinologia, hora, minuto)
+    tabela=Gerar_Tabela_Pacientes_Em_Atendimento(tabela, paciente_em_antendimento_Ortopedia)
+    tabela=Gerar_Tabela_Pacientes_Em_Espera(tabela, listaEsperaPacienteComumOrtopedia, hora, minuto)
+    tabela=Gerar_Tabela_Pacientes_Em_Espera(tabela, listaEsperaPacientePrioritarioOrtopedia, hora, minuto)
+    print(tabela)
 def ExibirPacientesAtendidosNoDia(listaPacienteComumAtendidoDermatologia, listaPacienteComumAtendidoEndocrinologia,
                                   listaPacienteComumAtendidoOrtopedia, listaPacientePrioritarioAtendidoDermatologia,
                                   listaPacientePrioritarioAtendidoEndocrinologia, listaPacientePrioritarioAtendidoOrtopedia):
     from prettytable import PrettyTable
-    x = PrettyTable(["Nome do paciente", "Tempo de espera na fila", "Tempo de Atendimento", "Consultório", "Médico do Consultório"])
+    tabela = PrettyTable(["Nome do paciente", "Tempo de espera na fila", "Tempo de Atendimento", "Consultório", "Médico do Consultório"])
 
     # Alinha as colunas
-    x.align["Nome do paciente"] = "l"
-    x.align["Tempo de espera na fila"] = "l"
-    x.align["Tempo de Atendimento"]="r"
-    x.align["Consultório"] = "r"
-    x.align["Médico do Consultório"] = "r"
-    #Inserindo na tabela os pacientes comuns do consultorio de dermatologia
-    for i in range(len(listaPacienteComumAtendidoDermatologia)):
-        hora_espera_na_fila, minuto_espera_na_fila=VariacaoDeTempo(listaPacienteComumAtendidoDermatologia[i][2], listaPacienteComumAtendidoDermatologia[i][3],
-                                             listaPacienteComumAtendidoDermatologia[i][6], listaPacienteComumAtendidoDermatologia[i][7])
-        tempo_espera_na_fila=str(hora_espera_na_fila)+" h : "+str(minuto_espera_na_fila)+" min"
-        hora_atendimento, minuto_atendimento=VariacaoDeTempo(listaPacienteComumAtendidoDermatologia[i][6], listaPacienteComumAtendidoDermatologia[i][7],
-                                          listaPacienteComumAtendidoDermatologia[i][8], listaPacienteComumAtendidoDermatologia[i][9])
-        tempo_atendimento=str(hora_atendimento)+" h : "+str(minuto_atendimento)+" min"
-        x.add_row([listaPacienteComumAtendidoDermatologia[i][1], tempo_espera_na_fila, tempo_atendimento, "Dermatologia", "Dra. Silvia Melo"])
+    tabela.align["Nome do paciente"] = "l"
+    tabela.align["Tempo de espera na fila"] = "l"
+    tabela.align["Tempo de Atendimento"]="l"
+    tabela.align["Consultório"] = "l"
+    tabela.align["Médico do Consultório"] = "l"
 
-    #Inserindo na tabela os pacientes comuns do consultorio de dermatologia
-    for i in range(len(listaPacientePrioritarioAtendidoDermatologia)):
-        hora_espera_na_fila, minuto_espera_na_fila=VariacaoDeTempo(listaPacientePrioritarioAtendidoDermatologia[i][2], listaPacientePrioritarioAtendidoDermatologia[i][3],
-                                             listaPacientePrioritarioAtendidoDermatologia[i][6], listaPacientePrioritarioAtendidoDermatologia[i][7])
-        tempo_espera_na_fila=str(hora_espera_na_fila)+" h : "+str(minuto_espera_na_fila)+" min"
-        hora_atendimento, minuto_atendimento=VariacaoDeTempo(listaPacientePrioritarioAtendidoDermatologia[i][6], listaPacientePrioritarioAtendidoDermatologia[i][7],
-                                          listaPacientePrioritarioAtendidoDermatologia[i][8], listaPacientePrioritarioAtendidoDermatologia[i][9])
-        tempo_atendimento=str(hora_atendimento)+" h : "+str(minuto_atendimento)+" min"
-        x.add_row([listaPacientePrioritarioAtendidoDermatologia[i][1], tempo_espera_na_fila, tempo_atendimento, "Dermatologia", "Dra. Silvia Melo"])
+    tabela=Gerar_Tabela_Pacientes_Atendidos(tabela, listaPacienteComumAtendidoDermatologia)
+    tabela=Gerar_Tabela_Pacientes_Atendidos(tabela, listaPacientePrioritarioAtendidoDermatologia)
+    tabela=Gerar_Tabela_Pacientes_Atendidos(tabela, listaPacienteComumAtendidoEndocrinologia)
+    tabela=Gerar_Tabela_Pacientes_Atendidos(tabela, listaPacientePrioritarioAtendidoEndocrinologia)
+    tabela=Gerar_Tabela_Pacientes_Atendidos(tabela, listaPacienteComumAtendidoOrtopedia)
+    tabela=Gerar_Tabela_Pacientes_Atendidos(tabela, listaPacientePrioritarioAtendidoOrtopedia)
 
-    #Inserindo na tabela os pacientes comuns do consultorio de endocrinologia
-    for i in range(len(listaPacienteComumAtendidoEndocrinologia)):
-        tempo_espera_na_fila=VariacaoDeTempo(listaPacienteComumAtendidoEndocrinologia[i][2], listaPacienteComumAtendidoEndocrinologia[i][3],
-                                             listaPacienteComumAtendidoEndocrinologia[i][6], listaPacienteComumAtendidoEndocrinologia[i][7])
-        tempo_atendimento=VariacaoDeTempo(listaPacienteComumAtendidoEndocrinologia[i][6], listaPacienteComumAtendidoEndocrinologia[i][7],
-                                          listaPacienteComumAtendidoEndocrinologia[i][8], listaPacienteComumAtendidoEndocrinologia[i][9])
-        x.add_row([listaPacienteComumAtendidoEndocrinologia[i][1], tempo_espera_na_fila, tempo_atendimento, "Endocrinologia", "Dr. Fernando Santos"])
+    print(tabela)
+def ExibirTempoMedioDeEsperaDosPacientes(listaPacienteComumAtendidoDermatologia, listaPacienteComumAtendidoEndocrinologia,
+                                         listaPacienteComumAtendidoOrtopedia, listaPacientePrioritarioAtendidoDermatologia,
+                                         listaPacientePrioritarioAtendidoEndocrinologia, listaPacientePrioritarioAtendidoOrtopedia,
+                                         paciente_em_atendimento_Dermatologia, paciente_em_atendimento_Endocrinologia,
+                                         paciente_em_atendimento_Ortopedia):
+    from prettytable import PrettyTable
+    tabela=PrettyTable()
+    dados=["Tempo de espera médio de todos os pacientes do Ambulatório",
+           "Tempo de espera médio dos pacientes comuns no Ambulatório",
+           "Tempo de espera médio dos pacientes preferenciais no Ambulatório",
+           "Tempo de espera médio dos pacientes comuns no consultório de dermatologia",
+           "Tempo de espera médio dos pacientes preferenciais no consultório de dermatologia",
+           "Tempo de espera médio dos pacientes comuns no consultório de endocrinologia",
+           "Tempo de espera médio dos pacientes preferenciais no consultório de endocrinologia",
+           "Tempo de espera médio dos pacientes comuns no consultório de ortopedia",
+           "Tempo de espera médio dos pacientes preferenciais no consultório de ortopedia"]
 
-    #Inserindo na tabela os pacientes comuns do consultorio de endocrinologia
-    for i in range(len(listaPacientePrioritarioAtendidoEndocrinologia)):
-        hora_espera_na_fila, minuto_espera_na_fila=VariacaoDeTempo(listaPacientePrioritarioAtendidoEndocrinologia[i][2], listaPacientePrioritarioAtendidoEndocrinologia[i][3],
-                                             listaPacientePrioritarioAtendidoEndocrinologia[i][6], listaPacientePrioritarioAtendidoEndocrinologia[i][7])
-        tempo_espera_na_fila=str(hora_espera_na_fila)+" h : "+str(minuto_espera_na_fila)+" min"
-        hora_atendimento, minuto_atendimento=VariacaoDeTempo(listaPacientePrioritarioAtendidoEndocrinologia[i][6], listaPacientePrioritarioAtendidoEndocrinologia[i][7],
-                                          listaPacientePrioritarioAtendidoEndocrinologia[i][8], listaPacientePrioritarioAtendidoEndocrinologia[i][9])
-        tempo_atendimento=str(hora_atendimento)+" h : "+str(minuto_atendimento)+" min"
-        x.add_row([listaPacientePrioritarioAtendidoEndocrinologia[i][1], tempo_espera_na_fila, tempo_atendimento, "Endocrinologia", "Dr. Fernando Santos"])
 
-    #Inserindo na tabela os pacientes comuns do consultorio de ortopedia
-    for i in range(len(listaPacienteComumAtendidoOrtopedia)):
-        tempo_espera_na_fila=VariacaoDeTempo(listaPacienteComumAtendidoOrtopedia[i][2], listaPacienteComumAtendidoOrtopedia[i][3],
-                                             listaPacienteComumAtendidoOrtopedia[i][6], listaPacienteComumAtendidoOrtopedia[i][7])
-        tempo_atendimento=VariacaoDeTempo(listaPacienteComumAtendidoOrtopedia[i][6], listaPacienteComumAtendidoOrtopedia[i][7],
-                                          listaPacienteComumAtendidoOrtopedia[i][8], listaPacienteComumAtendidoOrtopedia[i][9])
-        x.add_row([listaPacienteComumAtendidoOrtopedia[i][1], tempo_espera_na_fila, tempo_atendimento, "Ortopedia", "Dra. Maria do Carmo Silva"])
+    #Criação previas de variaveis que serão utilizadas para fazer os calculos
+    hora_total_ambulatorio = 0
+    minuto_total_ambulatorio = 0
+    hora_paciente_comum_ambulatorio = 0
+    minuto_paciente_comum_ambulatorio = 0
+    hora_paciente_preferencial_ambulatorio = 0
+    minuto_paciente_preferencial_ambulatorio = 0
+    hora_paciente_preferencial_dermatologia = 0
+    minuto_paciente_preferencial_dermatologia = 0
+    hora_paciente_preferencial_endocrinologia = 0
+    minuto_paciente_preferencial_endocrinologia = 0
+    hora_paciente_preferencial_ortopedia = 0
+    minuto_paciente_preferencial_ortopedia = 0
+    hora_paciente_comum_dermatologia = 0
+    minuto_paciente_comum_dermatologia = 0
+    hora_paciente_comum_endocrinologia = 0
+    minuto_paciente_comum_endocrinologia = 0
+    hora_paciente_comum_ortopedia = 0
+    minuto_paciente_comum_ortopedia = 0
 
-    #Inserindo na tabela os pacientes comuns do consultorio de ortopedia
-    for i in range(len(listaPacientePrioritarioAtendidoOrtopedia)):
-        hora_espera_na_fila, minuto_espera_na_fila=VariacaoDeTempo(listaPacientePrioritarioAtendidoOrtopedia[i][2], listaPacientePrioritarioAtendidoOrtopedia[i][3],
-                                             listaPacientePrioritarioAtendidoOrtopedia[i][6], listaPacientePrioritarioAtendidoOrtopedia[i][7])
-        tempo_espera_na_fila=str(hora_espera_na_fila)+" h : "+str(minuto_espera_na_fila)+" min"
-        hora_atendimento, minuto_atendimento=VariacaoDeTempo(listaPacientePrioritarioAtendidoOrtopedia[i][6], listaPacientePrioritarioAtendidoOrtopedia[i][7],
-                                          listaPacientePrioritarioAtendidoOrtopedia[i][8], listaPacientePrioritarioAtendidoOrtopedia[i][9])
-        tempo_atendimento=str(hora_atendimento)+" h : "+str(minuto_atendimento)+" min"
-        x.add_row([listaPacientePrioritarioAtendidoOrtopedia[i][1], tempo_espera_na_fila, tempo_atendimento, "Ortopedia", "Dra. Maria do Carmo Silva"])
+    #Bloco de codigo para calcular a media do tempo de espera dos pacientes no ambulatorio
+    hora_total_ambulatorio, minuto_total_ambulatorio = \
+        CalculaTempoTotalDeEspera(hora_total_ambulatorio, minuto_total_ambulatorio, listaPacienteComumAtendidoDermatologia)
+    hora_total_ambulatorio, minuto_total_ambulatorio = \
+        CalculaTempoTotalDeEspera(hora_total_ambulatorio, minuto_total_ambulatorio, listaPacientePrioritarioAtendidoDermatologia)
+    hora_total_ambulatorio, minuto_total_ambulatorio = \
+        CalculaTempoTotalDeEspera(hora_total_ambulatorio, minuto_total_ambulatorio, listaPacienteComumAtendidoEndocrinologia)
+    hora_total_ambulatorio, minuto_total_ambulatorio = \
+        CalculaTempoTotalDeEspera(hora_total_ambulatorio, minuto_total_ambulatorio, listaPacientePrioritarioAtendidoEndocrinologia)
+    hora_total_ambulatorio, minuto_total_ambulatorio = \
+        CalculaTempoTotalDeEspera(hora_total_ambulatorio, minuto_total_ambulatorio, listaPacienteComumAtendidoOrtopedia)
+    hora_total_ambulatorio, minuto_total_ambulatorio = \
+        CalculaTempoTotalDeEspera(hora_total_ambulatorio, minuto_total_ambulatorio, listaPacientePrioritarioAtendidoOrtopedia)
+    if(paciente_em_atendimento_Dermatologia):
+        hora_total_ambulatorio, minuto_total_ambulatorio = \
+            CalculaTempoTotalDeEspera(hora_total_ambulatorio, minuto_total_ambulatorio, [paciente_em_atendimento_Dermatologia])
+    if(paciente_em_atendimento_Endocrinologia):
+        hora_total_ambulatorio, minuto_total_ambulatorio = \
+            CalculaTempoTotalDeEspera(hora_total_ambulatorio, minuto_total_ambulatorio, [paciente_em_atendimento_Endocrinologia])
+    if(paciente_em_atendimento_Ortopedia):
+        hora_total_ambulatorio, minuto_total_ambulatorio = \
+            CalculaTempoTotalDeEspera(hora_total_ambulatorio, minuto_total_ambulatorio, [paciente_em_atendimento_Ortopedia])
 
-    print(x)
-def ExibirTempoMedioDeEsperaDosPacientes():
-    print("Esta funções serve para exibir o tempo medio de espera dos pacientes")
+    tempo_em_minutos_total=minuto_total_ambulatorio+(hora_total_ambulatorio*60)
 
-def ExibirTempoMedioDeAtendimentoDosPacientes():
-    print("Esta função serve para exibir tempo médio de atendimento dos pacientes")
+    quantidade_total = len(listaPacientePrioritarioAtendidoDermatologia)+len(listaPacienteComumAtendidoDermatologia) \
+                       + len(listaPacientePrioritarioAtendidoEndocrinologia)+len(listaPacienteComumAtendidoEndocrinologia)\
+                       + len(listaPacientePrioritarioAtendidoOrtopedia)+len(listaPacienteComumAtendidoOrtopedia)
+    if(paciente_em_atendimento_Dermatologia):
+        quantidade_total+=1
+    if(paciente_em_atendimento_Endocrinologia):
+        quantidade_total+=1
+    if(paciente_em_atendimento_Ortopedia):
+        quantidade_total+=1
+
+    media_total_ambulatorio = CalculaMedia(tempo_em_minutos_total, quantidade_total)
+    media_total_ambulatorio_formatada = Formatarhora(media_total_ambulatorio)
+
+    #Bloco de codigo para calcular a media de tempo de espera dos pacientes comuns no ambulatorio
+    hora_paciente_comum_ambulatorio, minuto_paciente_comum_ambulatorio = \
+        CalculaTempoTotalDeEspera(hora_paciente_comum_ambulatorio, minuto_paciente_comum_ambulatorio, listaPacienteComumAtendidoDermatologia)
+    hora_paciente_comum_ambulatorio, minuto_paciente_comum_ambulatorio = \
+        CalculaTempoTotalDeEspera(hora_paciente_comum_ambulatorio, minuto_paciente_comum_ambulatorio, listaPacienteComumAtendidoEndocrinologia)
+    hora_paciente_comum_ambulatorio, minuto_paciente_comum_ambulatorio = \
+        CalculaTempoTotalDeEspera(hora_paciente_comum_ambulatorio, minuto_paciente_comum_ambulatorio, listaPacienteComumAtendidoOrtopedia)
+
+    if(paciente_em_atendimento_Dermatologia):
+        if(paciente_em_atendimento_Dermatologia[5][0]=="c" or paciente_em_atendimento_Dermatologia[5][0]=="C"):
+            hora_paciente_comum_ambulatorio, minuto_paciente_comum_ambulatorio = \
+                CalculaTempoTotalDeEspera(hora_paciente_comum_ambulatorio, minuto_paciente_comum_ambulatorio, [paciente_em_atendimento_Dermatologia])
+    if(paciente_em_atendimento_Endocrinologia):
+        if(paciente_em_atendimento_Endocrinologia[5][0]=="c" or paciente_em_atendimento_Endocrinologia[5][0]=="C"):
+            hora_paciente_comum_ambulatorio, minuto_paciente_comum_ambulatorio = \
+                CalculaTempoTotalDeEspera(hora_paciente_comum_ambulatorio, minuto_paciente_comum_ambulatorio, [paciente_em_atendimento_Endocrinologia])
+    if(paciente_em_atendimento_Ortopedia):
+        if(paciente_em_atendimento_Ortopedia[5][0]=="c" or paciente_em_atendimento_Ortopedia[5][0]=="C"):
+            hora_paciente_comum_ambulatorio, minuto_paciente_comum_ambulatorio = \
+                CalculaTempoTotalDeEspera(hora_paciente_comum_ambulatorio, minuto_paciente_comum_ambulatorio, [paciente_em_atendimento_Ortopedia])
+    tempo_em_minutos_comum_ambulatorio = minuto_paciente_comum_ambulatorio+(hora_paciente_comum_ambulatorio*60)
+    quantidade_comum_ambulatorio = len(listaPacienteComumAtendidoDermatologia)+len(listaPacienteComumAtendidoEndocrinologia)\
+                                   +len(listaPacienteComumAtendidoOrtopedia)
+
+    if(paciente_em_atendimento_Dermatologia):
+        if(paciente_em_atendimento_Dermatologia[5][0]=="c" or paciente_em_atendimento_Dermatologia[5][0]=="C"):
+            quantidade_comum_ambulatorio+=1
+    if(paciente_em_atendimento_Endocrinologia):
+        if(paciente_em_atendimento_Endocrinologia[5][0]=="c" or paciente_em_atendimento_Endocrinologia[5][0]=="C"):
+            quantidade_comum_ambulatorio+=1
+    if(paciente_em_atendimento_Ortopedia):
+        if(paciente_em_atendimento_Ortopedia[5][0]=="c" or paciente_em_atendimento_Ortopedia[5][0]=="C"):
+            quantidade_comum_ambulatorio+=1
+
+    media_paciente_comum_ambulatorio = CalculaMedia(tempo_em_minutos_comum_ambulatorio, quantidade_comum_ambulatorio)
+    media_paciente_comum_ambulatorio_formatada = Formatarhora(media_paciente_comum_ambulatorio)
+
+    #Bloco de codigo para calcular a media de tempo de espera dos pacientes preferenciais no ambulatorio
+    hora_paciente_preferencial_ambulatorio, minuto_paciente_comum_ambulatorio = \
+        CalculaTempoTotalDeEspera(hora_paciente_preferencial_ambulatorio, minuto_paciente_preferencial_ambulatorio, listaPacientePrioritarioAtendidoDermatologia)
+    hora_paciente_preferencial_ambulatorio, minuto_paciente_comum_ambulatorio = CalculaTempoTotalDeEspera\
+        (hora_paciente_preferencial_ambulatorio, minuto_paciente_preferencial_ambulatorio, listaPacientePrioritarioAtendidoEndocrinologia)
+    hora_paciente_preferencial_ambulatorio, minuto_paciente_comum_ambulatorio = \
+        CalculaTempoTotalDeEspera(hora_paciente_preferencial_ambulatorio, minuto_paciente_preferencial_ambulatorio, listaPacientePrioritarioAtendidoOrtopedia)
+
+    if(paciente_em_atendimento_Dermatologia):
+        if(paciente_em_atendimento_Dermatologia[5][0]=="p" or paciente_em_atendimento_Dermatologia[5][0]=="P"):
+            hora_paciente_preferencial_ambulatorio, minuto_paciente_preferencial_ambulatorio = \
+                CalculaTempoTotalDeEspera(hora_paciente_preferencial_ambulatorio, minuto_paciente_preferencial_ambulatorio, [paciente_em_atendimento_Dermatologia])
+    if(paciente_em_atendimento_Endocrinologia):
+        if(paciente_em_atendimento_Endocrinologia[5][0]=="p" or paciente_em_atendimento_Endocrinologia[5][0]=="P"):
+            hora_paciente_preferencial_ambulatorio, minuto_paciente_preferencial_ambulatorio = \
+                CalculaTempoTotalDeEspera(hora_paciente_preferencial_ambulatorio, minuto_paciente_preferencial_ambulatorio, [paciente_em_atendimento_Endocrinologia])
+    if(paciente_em_atendimento_Ortopedia):
+        if(paciente_em_atendimento_Ortopedia[5][0]=="p" or paciente_em_atendimento_Ortopedia[5][0]=="P"):
+            hora_paciente_preferencial_ambulatorio, minuto_paciente_preferencial_ambulatorio = \
+                CalculaTempoTotalDeEspera(hora_paciente_preferencial_ambulatorio, minuto_paciente_preferencial_ambulatorio, [paciente_em_atendimento_Ortopedia])
+
+    tempo_em_minutos_preferencial_ambulatorio = minuto_paciente_preferencial_ambulatorio+(hora_paciente_preferencial_ambulatorio*60)
+    quantidade_preferencial_ambulatório = len(listaPacientePrioritarioAtendidoDermatologia)+len(listaPacientePrioritarioAtendidoEndocrinologia)\
+                                          + len(listaPacientePrioritarioAtendidoOrtopedia)
+
+    if(paciente_em_atendimento_Dermatologia):
+        if(paciente_em_atendimento_Dermatologia[5][0]=="p" or paciente_em_atendimento_Dermatologia[5][0]=="P"):
+            quantidade_preferencial_ambulatório+=1
+    if(paciente_em_atendimento_Endocrinologia):
+        if(paciente_em_atendimento_Endocrinologia[5][0]=="p" or paciente_em_atendimento_Endocrinologia[5][0]=="P"):
+            quantidade_preferencial_ambulatório+=1
+    if(paciente_em_atendimento_Ortopedia):
+        if(paciente_em_atendimento_Ortopedia[5][0]=="p" or paciente_em_atendimento_Ortopedia[5][0]=="P"):
+            quantidade_preferencial_ambulatório+=1
+
+    media_paciente_preferencial_ambulatorio = CalculaMedia(tempo_em_minutos_preferencial_ambulatorio, quantidade_preferencial_ambulatório)
+    media_paciente_preferencial_ambulatorio_formatada = Formatarhora(media_paciente_preferencial_ambulatorio)
+
+    #Bloco de codigo para calcular a media do tempo de espera dos pacientes comuns do consultorio de dermatologia
+    hora_paciente_comum_dermatologia, minuto_paciente_comum_dermatologia = \
+        CalculaTempoTotalDeEspera(hora_paciente_comum_dermatologia, minuto_paciente_comum_dermatologia, listaPacienteComumAtendidoDermatologia)
+    if(paciente_em_atendimento_Dermatologia):
+        if(paciente_em_atendimento_Dermatologia[5][0]=="c" or paciente_em_atendimento_Dermatologia[5][0]=="C"):
+            hora_paciente_comum_dermatologia, minuto_paciente_comum_dermatologia = \
+                CalculaTempoTotalDeEspera(hora_paciente_comum_dermatologia, minuto_paciente_comum_dermatologia, [paciente_em_atendimento_Dermatologia])
+    tempo_em_minutos_comum_dermatologia = minuto_paciente_comum_dermatologia+(hora_paciente_comum_dermatologia*60)
+    quantidade_comum_dermatologia = len(listaPacienteComumAtendidoDermatologia)
+    if(paciente_em_atendimento_Dermatologia):
+        if(paciente_em_atendimento_Dermatologia[5][0]=="c" or paciente_em_atendimento_Dermatologia[5][0]=="C"):
+            quantidade_comum_dermatologia+=1
+    media_paciente_comum_dermatologia = CalculaMedia(tempo_em_minutos_comum_dermatologia, quantidade_comum_dermatologia)
+    media_paciente_comum_dermatologia_formatada = Formatarhora(media_paciente_comum_dermatologia)
+
+    #Bloco de codigo para calcular a media do tempo de espera dos pacientes preferenciais do consultorio de dermatologia
+    hora_paciente_preferencial_dermatologia, minuto_paciente_preferencial_dermatologia = CalculaTempoTotalDeEspera\
+        (hora_paciente_preferencial_dermatologia, minuto_paciente_preferencial_dermatologia, listaPacientePrioritarioAtendidoDermatologia)
+    if(paciente_em_atendimento_Dermatologia):
+        if(paciente_em_atendimento_Dermatologia[5][0]=="p" or paciente_em_atendimento_Dermatologia[5][0]=="P"):
+            hora_paciente_preferencial_dermatologia, minuto_paciente_preferencial_dermatologia = \
+                CalculaTempoTotalDeEspera(hora_paciente_preferencial_dermatologia, minuto_paciente_preferencial_dermatologia, [paciente_em_atendimento_Dermatologia])
+
+    tempo_em_minutos_preferencial_dermatologia =  minuto_paciente_preferencial_dermatologia + (hora_paciente_preferencial_dermatologia*60)
+    quantidade_preferencial_dermatologia = len(listaPacientePrioritarioAtendidoDermatologia)
+    media_paciente_preferencial_dermatologia = CalculaMedia( tempo_em_minutos_preferencial_dermatologia, quantidade_preferencial_dermatologia)
+    media_paciente_preferencial_dermatologia_formatada = Formatarhora(media_paciente_preferencial_dermatologia)
+
+    #Bloco de codigo para calcular a media do tempo de espera dos pacientes comuns do consultorio de endocrinologia
+    hora_paciente_comum_endocrinologia, minuto_paciente_comum_endocrinologia = \
+        CalculaTempoTotalDeEspera(hora_paciente_comum_endocrinologia, minuto_paciente_comum_endocrinologia, listaPacienteComumAtendidoEndocrinologia)
+    if(paciente_em_atendimento_Endocrinologia):
+        if(paciente_em_atendimento_Endocrinologia[5][0]=="c" or paciente_em_atendimento_Endocrinologia[5][0]=="C"):
+            hora_paciente_comum_endocrinologia, minuto_paciente_comum_endocrinologia = \
+                CalculaTempoTotalDeEspera(hora_paciente_comum_endocrinologia, minuto_paciente_comum_endocrinologia, [paciente_em_atendimento_Endocrinologia])
+    tempo_em_minutos_comum_endocrinologia = minuto_paciente_comum_endocrinologia+(hora_paciente_comum_endocrinologia*60)
+    quantidade_comum_endocrinologia = len(listaPacienteComumAtendidoEndocrinologia)
+    if(paciente_em_atendimento_Endocrinologia):
+        if(paciente_em_atendimento_Endocrinologia[5][0]=="c" or paciente_em_atendimento_Endocrinologia[5][0]=="C"):
+            quantidade_comum_endocrinologia+=1
+    media_paciente_comum_endocrinologia = CalculaMedia(tempo_em_minutos_comum_endocrinologia, quantidade_comum_endocrinologia)
+    media_paciente_comum_endocrinologia_formatada = Formatarhora(media_paciente_comum_endocrinologia)
+
+    #Bloco de codigo para calcular a media do tempo de espera dos pacientes preferenciais do consultorio de endocrinologia
+    hora_paciente_preferencial_endocrinologia, minuto_paciente_preferencial_endocrinologia = CalculaTempoTotalDeEspera\
+        (hora_paciente_preferencial_endocrinologia, minuto_paciente_preferencial_endocrinologia, listaPacientePrioritarioAtendidoEndocrinologia)
+    if(paciente_em_atendimento_Endocrinologia):
+        if(paciente_em_atendimento_Endocrinologia[5][0]=="p" or paciente_em_atendimento_Endocrinologia[5][0]=="P"):
+            hora_paciente_preferencial_endocrinologia, minuto_paciente_preferencial_endocrinologia = \
+                CalculaTempoTotalDeEspera(hora_paciente_preferencial_endocrinologia, minuto_paciente_preferencial_endocrinologia, [paciente_em_atendimento_Endocrinologia])
+
+    tempo_em_minutos_preferencial_endocrinologia =  minuto_paciente_preferencial_endocrinologia + (hora_paciente_preferencial_endocrinologia*60)
+    quantidade_preferencial_endocrinologia = len(listaPacientePrioritarioAtendidoEndocrinologia)
+    if(paciente_em_atendimento_Endocrinologia):
+        if(paciente_em_atendimento_Endocrinologia[5][0]=="p" or paciente_em_atendimento_Endocrinologia[5][0]=="P"):
+            quantidade_preferencial_endocrinologia+=1
+    media_paciente_preferencial_endocrinologia = CalculaMedia( tempo_em_minutos_preferencial_endocrinologia, quantidade_preferencial_endocrinologia)
+    media_paciente_preferencial_endocrinologia_formatada = Formatarhora(media_paciente_preferencial_endocrinologia)
+
+    #Bloco de codigo para calcular a media do tempo de espera dos pacientes comuns do consultorio de ortopedia
+    hora_paciente_comum_ortopedia, minuto_paciente_comum_ortopedia = \
+        CalculaTempoTotalDeEspera(hora_paciente_comum_ortopedia, minuto_paciente_comum_ortopedia, listaPacienteComumAtendidoOrtopedia)
+    if(paciente_em_atendimento_Ortopedia):
+        if(paciente_em_atendimento_Ortopedia[5][0]=="c" or paciente_em_atendimento_Ortopedia[5][0]=="C"):
+            hora_paciente_comum_ortopedia, minuto_paciente_comum_ortopedia = \
+                CalculaTempoTotalDeEspera(hora_paciente_comum_ortopedia, minuto_paciente_comum_ortopedia, [paciente_em_atendimento_Ortopedia])
+    quantidade_comum_ortopedia = len(listaPacienteComumAtendidoOrtopedia)
+    tempo_em_minutos_comum_ortopedia = minuto_paciente_comum_ortopedia+(hora_paciente_comum_ortopedia*60)
+    if(paciente_em_atendimento_Ortopedia):
+        if(paciente_em_atendimento_Ortopedia[5][0]=="c" or paciente_em_atendimento_Ortopedia[5][0]=="C"):
+            quantidade_comum_ambulatorio+=1
+    media_paciente_comum_ortopedia = CalculaMedia(tempo_em_minutos_comum_ortopedia, quantidade_comum_ortopedia)
+    media_paciente_comum_ortopedia_formatada = Formatarhora(media_paciente_comum_ortopedia)
+
+    #Bloco de codigo para calcular a media do tempo de espera dos pacientes preferenciais do consultorio de ortopedia
+    hora_paciente_preferencial_ortopedia, minuto_paciente_preferencial_ortopedia = CalculaTempoTotalDeEspera\
+        (hora_paciente_preferencial_ortopedia, minuto_paciente_preferencial_ortopedia, listaPacientePrioritarioAtendidoOrtopedia)
+    if(paciente_em_atendimento_Ortopedia):
+        if(paciente_em_atendimento_Ortopedia[5][0]=="p" or paciente_em_atendimento_Ortopedia[5][0]=="P"):
+            hora_paciente_preferencial_ortopedia, minuto_paciente_preferencial_ortopedia = \
+                CalculaTempoTotalDeEspera(hora_paciente_preferencial_ortopedia, minuto_paciente_preferencial_ortopedia, [paciente_em_atendimento_Ortopedia])
+
+    tempo_em_minutos_preferencial_ortopedia =  minuto_paciente_preferencial_ortopedia + (hora_paciente_preferencial_ortopedia*60)
+    quantidade_preferencial_ortopedia = len(listaPacientePrioritarioAtendidoOrtopedia)
+    if(paciente_em_atendimento_Ortopedia):
+        if(paciente_em_atendimento_Ortopedia[5][0]=="p" or paciente_em_atendimento_Ortopedia[5][0]=="P"):
+            quantidade_preferencial_ortopedia+=1
+    media_paciente_preferencial_ortopedia = CalculaMedia( tempo_em_minutos_preferencial_ortopedia, quantidade_preferencial_ortopedia)
+    media_paciente_preferencial_ortopedia_formatada = Formatarhora(media_paciente_preferencial_ortopedia)
+
+    valores=[media_total_ambulatorio_formatada, media_paciente_comum_ambulatorio_formatada, media_paciente_preferencial_ambulatorio_formatada,
+             media_paciente_comum_dermatologia_formatada, media_paciente_preferencial_dermatologia_formatada, media_paciente_comum_endocrinologia_formatada,
+             media_paciente_preferencial_endocrinologia_formatada, media_paciente_comum_ortopedia_formatada, media_paciente_preferencial_ortopedia_formatada]
+
+    tabela.add_column("Dados", dados)
+    tabela.add_column("Valores", valores)
+
+    # Controla o alinhamento horizontal
+    tabela.align["Dados"] = "l"
+    tabela.align["Valores"] = "l"
+
+    print(tabela)
+
+def ExibirTempoMedioDeAtendimentoDosPacientes(listaPacienteComumAtendidoDermatologia, listaPacienteComumAtendidoEndocrinologia,
+                                              listaPacienteComumAtendidoOrtopedia, listaPacientePrioritarioAtendidoDermatologia,
+                                              listaPacientePrioritarioAtendidoEndocrinologia, listaPacientePrioritarioAtendidoOrtopedia):
+    from prettytable import PrettyTable
+    tabela=PrettyTable()
+    dados=["Tempo de atendimento médio de todos os pacientes do Ambulatório",
+           "Tempo de atendimento médio dos pacientes comuns no Ambulatório",
+           "Tempo de atendimento médio dos pacientes preferenciais no Ambulatório",
+           "Tempo de atendimento médio dos pacientes comuns no consultório de dermatologia",
+           "Tempo de atendimento médio dos pacientes preferenciais no consultório de dermatologia",
+           "Tempo de atendimento médio dos pacientes comuns no consultório de endocrinologia",
+           "Tempo de atendimento médio dos pacientes preferenciais no consultório de endocrinologia",
+           "Tempo de atendimento médio dos pacientes comuns no consultório de ortopedia",
+           "Tempo de atendimento médio dos pacientes preferenciais no consultório de ortopedia"]
+
+    #Criação previas de variaveis que serão utilizadas para fazer os calculos
+    hora_total_ambulatorio = 0
+    minuto_total_ambulatorio = 0
+    hora_paciente_comum_ambulatorio = 0
+    minuto_paciente_comum_ambulatorio = 0
+    hora_paciente_preferencial_ambulatorio = 0
+    minuto_paciente_preferencial_ambulatorio = 0
+    hora_paciente_preferencial_dermatologia = 0
+    minuto_paciente_preferencial_dermatologia = 0
+    hora_paciente_preferencial_endocrinologia = 0
+    minuto_paciente_preferencial_endocrinologia = 0
+    hora_paciente_preferencial_ortopedia = 0
+    minuto_paciente_preferencial_ortopedia = 0
+    hora_paciente_comum_dermatologia = 0
+    minuto_paciente_comum_dermatologia = 0
+    hora_paciente_comum_endocrinologia = 0
+    minuto_paciente_comum_endocrinologia = 0
+    hora_paciente_comum_ortopedia = 0
+    minuto_paciente_comum_ortopedia = 0
+
+    #Bloco de codigo para calcular a media do tempo de atendimento dos pacientes no ambulatorio
+    hora_total_ambulatorio, minuto_total_ambulatorio = \
+        CalculaTempoTotalDeAtendimento(hora_total_ambulatorio, minuto_total_ambulatorio, listaPacienteComumAtendidoDermatologia)
+    hora_total_ambulatorio, minuto_total_ambulatorio = \
+        CalculaTempoTotalDeAtendimento(hora_total_ambulatorio, minuto_total_ambulatorio, listaPacientePrioritarioAtendidoDermatologia)
+    hora_total_ambulatorio, minuto_total_ambulatorio = \
+        CalculaTempoTotalDeAtendimento(hora_total_ambulatorio, minuto_total_ambulatorio, listaPacienteComumAtendidoEndocrinologia)
+    hora_total_ambulatorio, minuto_total_ambulatorio = \
+        CalculaTempoTotalDeAtendimento(hora_total_ambulatorio, minuto_total_ambulatorio, listaPacientePrioritarioAtendidoEndocrinologia)
+    hora_total_ambulatorio, minuto_total_ambulatorio = \
+        CalculaTempoTotalDeAtendimento(hora_total_ambulatorio, minuto_total_ambulatorio, listaPacienteComumAtendidoOrtopedia)
+    hora_total_ambulatorio, minuto_total_ambulatorio = \
+        CalculaTempoTotalDeAtendimento(hora_total_ambulatorio, minuto_total_ambulatorio, listaPacientePrioritarioAtendidoOrtopedia)
+
+    tempo_em_minutos_total=minuto_total_ambulatorio+(hora_total_ambulatorio*60)
+
+    quantidade_total = len(listaPacientePrioritarioAtendidoDermatologia)+len(listaPacienteComumAtendidoDermatologia) \
+                       + len(listaPacientePrioritarioAtendidoEndocrinologia)+len(listaPacienteComumAtendidoEndocrinologia)\
+                       + len(listaPacientePrioritarioAtendidoOrtopedia)+len(listaPacienteComumAtendidoOrtopedia)
+
+    media_total_ambulatorio = CalculaMedia(tempo_em_minutos_total, quantidade_total)
+    media_total_ambulatorio_formatada = Formatarhora(media_total_ambulatorio)
+
+    #Bloco de codigo para calcular a media de tempo de atendimento dos pacientes comuns no ambulatorio
+    hora_paciente_comum_ambulatorio, minuto_paciente_comum_ambulatorio = \
+        CalculaTempoTotalDeAtendimento(hora_paciente_comum_ambulatorio, minuto_paciente_comum_ambulatorio, listaPacienteComumAtendidoDermatologia)
+    hora_paciente_comum_ambulatorio, minuto_paciente_comum_ambulatorio = \
+        CalculaTempoTotalDeAtendimento(hora_paciente_comum_ambulatorio, minuto_paciente_comum_ambulatorio, listaPacienteComumAtendidoEndocrinologia)
+    hora_paciente_comum_ambulatorio, minuto_paciente_comum_ambulatorio = \
+        CalculaTempoTotalDeAtendimento(hora_paciente_comum_ambulatorio, minuto_paciente_comum_ambulatorio, listaPacienteComumAtendidoOrtopedia)
+
+    tempo_em_minutos_comum_ambulatorio = minuto_paciente_comum_ambulatorio+(hora_paciente_comum_ambulatorio*60)
+    quantidade_comum_ambulatorio = len(listaPacienteComumAtendidoDermatologia)+len(listaPacienteComumAtendidoEndocrinologia)\
+                                   +len(listaPacienteComumAtendidoOrtopedia)
+
+    media_paciente_comum_ambulatorio = CalculaMedia(tempo_em_minutos_comum_ambulatorio, quantidade_comum_ambulatorio)
+    media_paciente_comum_ambulatorio_formatada = Formatarhora(media_paciente_comum_ambulatorio)
+
+    #Bloco de codigo para calcular a media de tempo de atendimento dos pacientes preferenciais no ambulatorio
+    hora_paciente_preferencial_ambulatorio, minuto_paciente_comum_ambulatorio = \
+        CalculaTempoTotalDeAtendimento(hora_paciente_preferencial_ambulatorio, minuto_paciente_preferencial_ambulatorio, listaPacientePrioritarioAtendidoDermatologia)
+    hora_paciente_preferencial_ambulatorio, minuto_paciente_comum_ambulatorio = CalculaTempoTotalDeAtendimento\
+        (hora_paciente_preferencial_ambulatorio, minuto_paciente_preferencial_ambulatorio, listaPacientePrioritarioAtendidoEndocrinologia)
+    hora_paciente_preferencial_ambulatorio, minuto_paciente_comum_ambulatorio = \
+        CalculaTempoTotalDeAtendimento(hora_paciente_preferencial_ambulatorio, minuto_paciente_preferencial_ambulatorio, listaPacientePrioritarioAtendidoOrtopedia)
+
+    tempo_em_minutos_preferencial_ambulatorio = minuto_paciente_preferencial_ambulatorio+(hora_paciente_preferencial_ambulatorio*60)
+    quantidade_preferencial_ambulatório = len(listaPacientePrioritarioAtendidoDermatologia)+len(listaPacientePrioritarioAtendidoEndocrinologia)\
+                                          + len(listaPacientePrioritarioAtendidoOrtopedia)
+
+    media_paciente_preferencial_ambulatorio = CalculaMedia(tempo_em_minutos_preferencial_ambulatorio, quantidade_preferencial_ambulatório)
+    media_paciente_preferencial_ambulatorio_formatada = Formatarhora(media_paciente_preferencial_ambulatorio)
+
+    #Bloco de codigo para calcular a media do tempo de atendimento dos pacientes comuns do consultorio de dermatologia
+    hora_paciente_comum_dermatologia, minuto_paciente_comum_dermatologia = \
+        CalculaTempoTotalDeAtendimento(hora_paciente_comum_dermatologia, minuto_paciente_comum_dermatologia, listaPacienteComumAtendidoDermatologia)
+
+    tempo_em_minutos_comum_dermatologia = minuto_paciente_comum_dermatologia+(hora_paciente_comum_dermatologia*60)
+    quantidade_comum_dermatologia = len(listaPacienteComumAtendidoDermatologia)
+
+    media_paciente_comum_dermatologia = CalculaMedia(tempo_em_minutos_comum_dermatologia, quantidade_comum_dermatologia)
+    media_paciente_comum_dermatologia_formatada = Formatarhora(media_paciente_comum_dermatologia)
+
+    #Bloco de codigo para calcular a media do tempo de atendimento dos pacientes preferenciais do consultorio de dermatologia
+    hora_paciente_preferencial_dermatologia, minuto_paciente_preferencial_dermatologia = CalculaTempoTotalDeAtendimento\
+        (hora_paciente_preferencial_dermatologia, minuto_paciente_preferencial_dermatologia, listaPacientePrioritarioAtendidoDermatologia)
+
+    tempo_em_minutos_preferencial_dermatologia =  minuto_paciente_preferencial_dermatologia + (hora_paciente_preferencial_dermatologia*60)
+    quantidade_preferencial_dermatologia = len(listaPacientePrioritarioAtendidoDermatologia)
+    media_paciente_preferencial_dermatologia = CalculaMedia( tempo_em_minutos_preferencial_dermatologia, quantidade_preferencial_dermatologia)
+    media_paciente_preferencial_dermatologia_formatada = Formatarhora(media_paciente_preferencial_dermatologia)
+
+    #Bloco de codigo para calcular a media do tempo de atendimento dos pacientes comuns do consultorio de endocrinologia
+    hora_paciente_comum_endocrinologia, minuto_paciente_comum_endocrinologia = \
+        CalculaTempoTotalDeAtendimento(hora_paciente_comum_endocrinologia, minuto_paciente_comum_endocrinologia, listaPacienteComumAtendidoEndocrinologia)
+
+    tempo_em_minutos_comum_endocrinologia = minuto_paciente_comum_endocrinologia+(hora_paciente_comum_endocrinologia*60)
+    quantidade_comum_endocrinologia = len(listaPacienteComumAtendidoEndocrinologia)
+
+    media_paciente_comum_endocrinologia = CalculaMedia(tempo_em_minutos_comum_endocrinologia, quantidade_comum_endocrinologia)
+    media_paciente_comum_endocrinologia_formatada = Formatarhora(media_paciente_comum_endocrinologia)
+
+    #Bloco de codigo para calcular a media do tempo de atendimento dos pacientes preferenciais do consultorio de endocrinologia
+    hora_paciente_preferencial_endocrinologia, minuto_paciente_preferencial_endocrinologia = CalculaTempoTotalDeAtendimento\
+        (hora_paciente_preferencial_endocrinologia, minuto_paciente_preferencial_endocrinologia, listaPacientePrioritarioAtendidoEndocrinologia)
+
+    tempo_em_minutos_preferencial_endocrinologia =  minuto_paciente_preferencial_endocrinologia + (hora_paciente_preferencial_endocrinologia*60)
+    quantidade_preferencial_endocrinologia = len(listaPacientePrioritarioAtendidoEndocrinologia)
+
+    media_paciente_preferencial_endocrinologia = CalculaMedia( tempo_em_minutos_preferencial_endocrinologia, quantidade_preferencial_endocrinologia)
+    media_paciente_preferencial_endocrinologia_formatada = Formatarhora(media_paciente_preferencial_endocrinologia)
+
+    #Bloco de codigo para calcular a media do tempo de atendimento dos pacientes comuns do consultorio de ortopedia
+    hora_paciente_comum_ortopedia, minuto_paciente_comum_ortopedia = \
+        CalculaTempoTotalDeAtendimento(hora_paciente_comum_ortopedia, minuto_paciente_comum_ortopedia, listaPacienteComumAtendidoOrtopedia)
+
+    quantidade_comum_ortopedia = len(listaPacienteComumAtendidoOrtopedia)
+    tempo_em_minutos_comum_ortopedia = minuto_paciente_comum_ortopedia+(hora_paciente_comum_ortopedia*60)
+
+    media_paciente_comum_ortopedia = CalculaMedia(tempo_em_minutos_comum_ortopedia, quantidade_comum_ortopedia)
+    media_paciente_comum_ortopedia_formatada = Formatarhora(media_paciente_comum_ortopedia)
+
+    #Bloco de codigo para calcular a media do tempo de atendimento dos pacientes preferenciais do consultorio de ortopedia
+    hora_paciente_preferencial_ortopedia, minuto_paciente_preferencial_ortopedia = CalculaTempoTotalDeAtendimento\
+        (hora_paciente_preferencial_ortopedia, minuto_paciente_preferencial_ortopedia, listaPacientePrioritarioAtendidoOrtopedia)
+
+    tempo_em_minutos_preferencial_ortopedia =  minuto_paciente_preferencial_ortopedia + (hora_paciente_preferencial_ortopedia*60)
+    quantidade_preferencial_ortopedia = len(listaPacientePrioritarioAtendidoOrtopedia)
+    media_paciente_preferencial_ortopedia = CalculaMedia( tempo_em_minutos_preferencial_ortopedia, quantidade_preferencial_ortopedia)
+    media_paciente_preferencial_ortopedia_formatada = Formatarhora(media_paciente_preferencial_ortopedia)
+
+    valores=[media_total_ambulatorio_formatada, media_paciente_comum_ambulatorio_formatada, media_paciente_preferencial_ambulatorio_formatada,
+             media_paciente_comum_dermatologia_formatada, media_paciente_preferencial_dermatologia_formatada, media_paciente_comum_endocrinologia_formatada,
+             media_paciente_preferencial_endocrinologia_formatada, media_paciente_comum_ortopedia_formatada, media_paciente_preferencial_ortopedia_formatada]
+
+    tabela.add_column("Dados", dados)
+    tabela.add_column("Valores", valores)
+
+    # Controla o alinhamento horizontal do texto contido na tabela
+    tabela.align["Dados"] = "l"
+    tabela.align["Valores"] = "l"
+
+    print(tabela)
