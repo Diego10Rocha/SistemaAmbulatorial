@@ -104,12 +104,12 @@ while(opcao!=9):
 
     elif(opcao==2):
 
-        tamPrioritarioDermatologiaAtendido=len(listaPacientePrioritarioAtendidoDermatologia)
-        tamPrioritarioEndocrinologiaAtendido=len(listaPacientePrioritarioAtendidoEndocrinologia)
-        tamPrioritarioOrtopediaAtendido=len(listaPacientePrioritarioAtendidoOrtopedia)
-        tamComumDermatologiaAtendido=len(listaPacienteComumAtendidoDermatologia)
-        tamComumEndocrinologiaAtendido=len(listaPacienteComumAtendidoEndocrinologia)
-        tamComumOrtopediaAtendido=len(listaPacienteComumAtendidoOrtopedia)
+        tamPrioritarioDermatologiaAtendido = len(listaPacientePrioritarioAtendidoDermatologia)
+        tamPrioritarioEndocrinologiaAtendido = len(listaPacientePrioritarioAtendidoEndocrinologia)
+        tamPrioritarioOrtopediaAtendido = len(listaPacientePrioritarioAtendidoOrtopedia)
+        tamComumDermatologiaAtendido = len(listaPacienteComumAtendidoDermatologia)
+        tamComumEndocrinologiaAtendido = len(listaPacienteComumAtendidoEndocrinologia)
+        tamComumOrtopediaAtendido = len(listaPacienteComumAtendidoOrtopedia)
         Dados_paciente_chamados_para_atendimento=(ChamarPacienteParaAtendimento
                                                   (paciente_em_atendimento_Dermatologia, paciente_em_atendimento_Endocrinologia,
                                                   paciente_em_atendimento_Ortopedia, listaEsperaPacienteComumDermatologia,
@@ -144,6 +144,9 @@ while(opcao!=9):
         ultimo_paciente_chamado_dermatologia = Dados_paciente_chamados_para_atendimento[16]
         ultimo_paciente_chamado_endocrinologia = Dados_paciente_chamados_para_atendimento[17]
         ultimo_paciente_chamado_ortopedia = Dados_paciente_chamados_para_atendimento[18]
+        ordem_chegada_dermatologia = Dados_paciente_chamados_para_atendimento[19]
+        ordem_chegada_endocrinologia = Dados_paciente_chamados_para_atendimento[20]
+        ordem_chegada_ortopedia = Dados_paciente_chamados_para_atendimento[21]
 
     elif(opcao==3):
         for senha, paciente in dados_Pacientes.items():

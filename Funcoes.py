@@ -311,12 +311,14 @@ def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, pacient
                                   ordem_chegada_ortopedia, dados_Pacientes):
 
     opcao=0
-    hora_atendimento_Dermatologia=0
-    minuto_atendimento_Dermatologia=0
-    hora_atendimento_Endocrinologia=0
-    minuto_atendimento_Endocrinologia=0
-    hora_atendimento_Ortopedia=0
-    minuto_atendimento_Ortopedia=0
+    hora_atendimento_Dermatologia = 0
+    minuto_atendimento_Dermatologia = 0
+    hora_atendimento_Endocrinologia = 0
+    minuto_atendimento_Endocrinologia = 0
+    hora_atendimento_Ortopedia = 0
+    minuto_atendimento_Ortopedia = 0
+    chama_comum = False
+    chama_preferencial = False
     MSG="O paciente não compareceu, selecione a opção 3 para pular o paciente"
     comparecimento="n"
     while(opcao!="4"):
@@ -336,6 +338,30 @@ def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, pacient
                 if(not paciente_em_antendimento_Dermatologia and
                         (listaEsperaPacientePrioritarioDermatologia or listaEsperaPacienteComumDermatologia)):
                     if(not ultimo_paciente_chamado_dermatologia and listaEsperaPacientePrioritarioDermatologia):
+                        chama_preferencial = True
+                    elif(not ultimo_paciente_chamado_dermatologia and not listaEsperaPacientePrioritarioDermatologia
+                         and listaEsperaPacienteComumDermatologia):
+                        chama_comum = True
+                    elif(not listaEsperaPacientePrioritarioDermatologia and listaEsperaPacienteComumDermatologia):
+                        chama_comum = True
+                    elif(not listaEsperaPacienteComumDermatologia and listaEsperaPacientePrioritarioDermatologia):
+                        chama_preferencial = True
+                    elif(ultimo_paciente_chamado_dermatologia):
+                        if(ultimo_paciente_chamado_dermatologia[0]=="c" or ultimo_paciente_chamado_dermatologia[0]=="C"):
+                            if(listaEsperaPacientePrioritarioDermatologia):
+                                chama_preferencial = True
+                            elif(listaEsperaPacienteComumDermatologia):
+                                chama_comum = True
+                        elif(ultimo_paciente_chamado_dermatologia[0]=="p" or ultimo_paciente_chamado_dermatologia[0]=="P"):
+                            if(listaEsperaPacientePrioritarioDermatologia):
+                                if(ordem_chegada_dermatologia[0][0]=="p" or ordem_chegada_dermatologia[0][0]=="P"):
+                                    chama_preferencial = True
+                                elif(listaEsperaPacienteComumDermatologia):
+                                    chama_comum = True
+                            elif(listaEsperaPacienteComumDermatologia):
+                                chama_comum = True
+
+                    if(chama_preferencial):
                         print("Próxima senha do consultório de DERMATOLOGIA:")
                         print(listaEsperaPacientePrioritarioDermatologia[0][5], "-", listaEsperaPacientePrioritarioDermatologia[0][1],
                               "- Consultório de Dermatologia")
@@ -350,17 +376,17 @@ def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, pacient
                                 minuto_atendimento_Dermatologia=SolicitarMinuto()
                                 paciente_em_antendimento_Dermatologia.append(hora_atendimento_Dermatologia)
                                 paciente_em_antendimento_Dermatologia.append(minuto_atendimento_Dermatologia)
-                                for i in ordem_chegada_dermatologia:
+                                for i in range(len(ordem_chegada_dermatologia)):
                                     if(ordem_chegada_dermatologia[i][5] == paciente_em_antendimento_Dermatologia[5]):
                                         ordem_chegada_dermatologia.pop(i)
                                         break
                                 listaEsperaPacientePrioritarioDermatologia.pop(0)
                             elif(comparecimento=="n" or comparecimento=="N"):
+                                chama_preferencial = False
                                 dados_Pacientes, listaEsperaPacientePrioritarioDermatologia=\
                                     PularPaciente(dados_Pacientes, listaEsperaPacientePrioritarioDermatologia[0][5],
                                                   listaEsperaPacientePrioritarioDermatologia)
-                    elif(not ultimo_paciente_chamado_dermatologia and not listaEsperaPacientePrioritarioDermatologia
-                         and listaEsperaPacienteComumDermatologia):
+                    elif(chama_comum):
                         print("Próxima senha do consultório de DERMATOLOGIA:")
                         print(listaEsperaPacienteComumDermatologia[0][5], "-", listaEsperaPacienteComumDermatologia[0][1],
                               "- Consultório de Dermatologia")
@@ -374,231 +400,17 @@ def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, pacient
                                 minuto_atendimento_Dermatologia=SolicitarMinuto()
                                 paciente_em_antendimento_Dermatologia.append(hora_atendimento_Dermatologia)
                                 paciente_em_antendimento_Dermatologia.append(minuto_atendimento_Dermatologia)
-                                listaEsperaPacienteComumDermatologia.pop(0)
-                            elif(comparecimento=="n" or comparecimento=="N"):
-                                dados_Pacientes, listaEsperaPacienteComumDermatologia=\
-                                    PularPaciente(dados_Pacientes,listaEsperaPacienteComumDermatologia[0][5],
-                                                  listaEsperaPacienteComumDermatologia)
-                    elif(not listaEsperaPacientePrioritarioDermatologia and listaEsperaPacienteComumDermatologia):
-                        print("Próxima senha do consultório de DERMATOLOGIA:")
-                        print(listaEsperaPacienteComumDermatologia[0][5], "-", listaEsperaPacienteComumDermatologia[0][1],
-                              "- Consultório de Dermatologia")
-                        while(comparecimento!="n" and comparecimento!="N" and comparecimento!="s" and comparecimento!="S"):
-                            comparecimento=input("O paciente compareceu? Digite 'N' para pular o paciente e chamar o próximo. "
-                                        "Digite 'S' para continuar com o atendimento\n")
-                            if(comparecimento=="S" or comparecimento=="s"):
-                                paciente_em_antendimento_Dermatologia=listaEsperaPacienteComumDermatologia[0]
-                                ultimo_paciente_chamado_dermatologia = paciente_em_antendimento_Dermatologia
-                                hora_atendimento_Dermatologia=SolicitarHora()
-                                minuto_atendimento_Dermatologia=SolicitarMinuto()
-                                paciente_em_antendimento_Dermatologia.append(hora_atendimento_Dermatologia)
-                                paciente_em_antendimento_Dermatologia.append(minuto_atendimento_Dermatologia)
-                                for i in ordem_chegada_dermatologia:
+                                for i in range(len(ordem_chegada_dermatologia)):
                                     if(ordem_chegada_dermatologia[i][5] == paciente_em_antendimento_Dermatologia[5]):
                                         ordem_chegada_dermatologia.pop(i)
                                         break
                                 listaEsperaPacienteComumDermatologia.pop(0)
                             elif(comparecimento=="n" or comparecimento=="N"):
+                                chama_comum = True
                                 dados_Pacientes, listaEsperaPacienteComumDermatologia=\
                                     PularPaciente(dados_Pacientes,listaEsperaPacienteComumDermatologia[0][5],
                                                   listaEsperaPacienteComumDermatologia)
 
-                    elif(not listaEsperaPacienteComumDermatologia and listaEsperaPacientePrioritarioDermatologia):
-                        print("Próxima senha do consultório de DERMATOLOGIA:")
-                        print(listaEsperaPacientePrioritarioDermatologia[0][5], "-", listaEsperaPacientePrioritarioDermatologia[0][1],
-                              "- Consultório de Dermatologia")
-
-                        while(comparecimento!="n" and comparecimento!="N" and comparecimento!="s" and comparecimento!="S"):
-                            comparecimento=input("O paciente compareceu? Digite 'N' para pular o paciente e chamar o proximo. "
-                                        "Digite 'S' para continuar com o atendimento\n")
-                            if(comparecimento=="S" or comparecimento=="s"):
-                                paciente_em_antendimento_Dermatologia=listaEsperaPacientePrioritarioDermatologia[0]
-                                ultimo_paciente_chamado_dermatologia = paciente_em_antendimento_Dermatologia
-                                hora_atendimento_Dermatologia=SolicitarHora()
-                                minuto_atendimento_Dermatologia=SolicitarMinuto()
-                                paciente_em_antendimento_Dermatologia.append(hora_atendimento_Dermatologia)
-                                paciente_em_antendimento_Dermatologia.append(minuto_atendimento_Dermatologia)
-                                for i in ordem_chegada_dermatologia:
-                                    if(ordem_chegada_dermatologia[i][5] == paciente_em_antendimento_Dermatologia[5]):
-                                        ordem_chegada_dermatologia.pop(i)
-                                        break
-                                listaEsperaPacientePrioritarioDermatologia.pop(0)
-                            elif(comparecimento=="n" or comparecimento=="N"):
-                                dados_Pacientes, listaEsperaPacientePrioritarioDermatologia=\
-                                    PularPaciente(dados_Pacientes, listaEsperaPacientePrioritarioDermatologia[0][5],
-                                                  listaEsperaPacientePrioritarioDermatologia)
-                    elif(ultimo_paciente_chamado_dermatologia):
-                        if(ultimo_paciente_chamado_dermatologia[0]=="c" or ultimo_paciente_chamado_dermatologia[0]=="C"):
-                            if(listaEsperaPacientePrioritarioDermatologia):
-                                print("Próxima senha do consultório de DERMATOLOGIA:")
-                                print(listaEsperaPacientePrioritarioDermatologia[0][5], "-", listaEsperaPacientePrioritarioDermatologia[0][1],
-                                      "- Consultório de Dermatologia")
-
-                                while(comparecimento!="n" and comparecimento!="N" and comparecimento!="s" and comparecimento!="S"):
-                                    comparecimento=input("O paciente compareceu? Digite 'N' para pular o paciente e chamar o proximo. "
-                                                "Digite 'S' para continuar com o atendimento\n")
-                                    if(comparecimento=="S" or comparecimento=="s"):
-                                        paciente_em_antendimento_Dermatologia=listaEsperaPacientePrioritarioDermatologia[0]
-                                        ultimo_paciente_chamado_dermatologia = paciente_em_antendimento_Dermatologia
-                                        hora_atendimento_Dermatologia=SolicitarHora()
-                                        minuto_atendimento_Dermatologia=SolicitarMinuto()
-                                        paciente_em_antendimento_Dermatologia.append(hora_atendimento_Dermatologia)
-                                        paciente_em_antendimento_Dermatologia.append(minuto_atendimento_Dermatologia)
-                                        for i in ordem_chegada_dermatologia:
-                                            if(ordem_chegada_dermatologia[i][5] == paciente_em_antendimento_Dermatologia[5]):
-                                                ordem_chegada_dermatologia.pop(i)
-                                                break
-                                        listaEsperaPacientePrioritarioDermatologia.pop(0)
-                                    elif(comparecimento=="n" or comparecimento=="N"):
-                                        dados_Pacientes, listaEsperaPacientePrioritarioDermatologia=\
-                                            PularPaciente(dados_Pacientes, listaEsperaPacientePrioritarioDermatologia[0][5],
-                                                          listaEsperaPacientePrioritarioDermatologia)
-                            elif(listaEsperaPacienteComumDermatologia):
-                                print("Próxima senha do consultório de DERMATOLOGIA:")
-                                print(listaEsperaPacienteComumDermatologia[0][5], "-", listaEsperaPacienteComumDermatologia[0][1],
-                                      "- Consultório de Dermatologia")
-                                while(comparecimento!="n" and comparecimento!="N" and comparecimento!="s" and comparecimento!="S"):
-                                    comparecimento=input("O paciente compareceu? Digite 'N' para pular o paciente e chamar o próximo. "
-                                                "Digite 'S' para continuar com o atendimento\n")
-                                    if(comparecimento=="S" or comparecimento=="s"):
-                                        paciente_em_antendimento_Dermatologia=listaEsperaPacienteComumDermatologia[0]
-                                        ultimo_paciente_chamado_dermatologia = paciente_em_antendimento_Dermatologia
-                                        hora_atendimento_Dermatologia=SolicitarHora()
-                                        minuto_atendimento_Dermatologia=SolicitarMinuto()
-                                        paciente_em_antendimento_Dermatologia.append(hora_atendimento_Dermatologia)
-                                        paciente_em_antendimento_Dermatologia.append(minuto_atendimento_Dermatologia)
-                                        listaEsperaPacienteComumDermatologia.pop(0)
-                                    elif(comparecimento=="n" or comparecimento=="N"):
-                                        dados_Pacientes, listaEsperaPacienteComumDermatologia=\
-                                            PularPaciente(dados_Pacientes,listaEsperaPacienteComumDermatologia[0][5],
-                                                          listaEsperaPacienteComumDermatologia)
-                        elif(ultimo_paciente_chamado_dermatologia[0]=="p" or ultimo_paciente_chamado_dermatologia[0]=="P"):
-                            if(listaEsperaPacientePrioritarioDermatologia):
-                                if(ordem_chegada_dermatologia[0][0]=="p" or ordem_chegada_dermatologia[0][0]=="P"):
-                                    print("Próxima senha do consultório de DERMATOLOGIA:")
-                                    print(listaEsperaPacientePrioritarioDermatologia[0][5], "-", listaEsperaPacientePrioritarioDermatologia[0][1],
-                                          "- Consultório de Dermatologia")
-
-                                    while(comparecimento!="n" and comparecimento!="N" and comparecimento!="s" and comparecimento!="S"):
-                                        comparecimento=input("O paciente compareceu? Digite 'N' para pular o paciente e chamar o proximo. "
-                                                    "Digite 'S' para continuar com o atendimento\n")
-                                        if(comparecimento=="S" or comparecimento=="s"):
-                                            paciente_em_antendimento_Dermatologia=listaEsperaPacientePrioritarioDermatologia[0]
-                                            ultimo_paciente_chamado_dermatologia = paciente_em_antendimento_Dermatologia
-                                            hora_atendimento_Dermatologia=SolicitarHora()
-                                            minuto_atendimento_Dermatologia=SolicitarMinuto()
-                                            paciente_em_antendimento_Dermatologia.append(hora_atendimento_Dermatologia)
-                                            paciente_em_antendimento_Dermatologia.append(minuto_atendimento_Dermatologia)
-                                            for i in ordem_chegada_dermatologia:
-                                                if(ordem_chegada_dermatologia[i][5] == paciente_em_antendimento_Dermatologia[5]):
-                                                    ordem_chegada_dermatologia.pop(i)
-                                                    break
-                                            listaEsperaPacientePrioritarioDermatologia.pop(0)
-                                        elif(comparecimento=="n" or comparecimento=="N"):
-                                            dados_Pacientes, listaEsperaPacientePrioritarioDermatologia=\
-                                                PularPaciente(dados_Pacientes, listaEsperaPacientePrioritarioDermatologia[0][5],
-                                                              listaEsperaPacientePrioritarioDermatologia)
-                                elif(listaEsperaPacienteComumDermatologia):
-                                    print("Próxima senha do consultório de DERMATOLOGIA:")
-                                    print(listaEsperaPacienteComumDermatologia[0][5], "-", listaEsperaPacienteComumDermatologia[0][1],
-                                          "- Consultório de Dermatologia")
-                                    while(comparecimento!="n" and comparecimento!="N" and comparecimento!="s" and comparecimento!="S"):
-                                        comparecimento=input("O paciente compareceu? Digite 'N' para pular o paciente e chamar o próximo. "
-                                                    "Digite 'S' para continuar com o atendimento\n")
-                                        if(comparecimento=="S" or comparecimento=="s"):
-                                            paciente_em_antendimento_Dermatologia=listaEsperaPacienteComumDermatologia[0]
-                                            ultimo_paciente_chamado_dermatologia = paciente_em_antendimento_Dermatologia
-                                            hora_atendimento_Dermatologia=SolicitarHora()
-                                            minuto_atendimento_Dermatologia=SolicitarMinuto()
-                                            paciente_em_antendimento_Dermatologia.append(hora_atendimento_Dermatologia)
-                                            paciente_em_antendimento_Dermatologia.append(minuto_atendimento_Dermatologia)
-                                            listaEsperaPacienteComumDermatologia.pop(0)
-                                        elif(comparecimento=="n" or comparecimento=="N"):
-                                            dados_Pacientes, listaEsperaPacienteComumDermatologia=\
-                                                PularPaciente(dados_Pacientes,listaEsperaPacienteComumDermatologia[0][5],
-                                                              listaEsperaPacienteComumDermatologia)
-                            elif(listaEsperaPacienteComumDermatologia):
-                                print("Próxima senha do consultório de DERMATOLOGIA:")
-                                print(listaEsperaPacienteComumDermatologia[0][5], "-", listaEsperaPacienteComumDermatologia[0][1],
-                                      "- Consultório de Dermatologia")
-                                while(comparecimento!="n" and comparecimento!="N" and comparecimento!="s" and comparecimento!="S"):
-                                    comparecimento=input("O paciente compareceu? Digite 'N' para pular o paciente e chamar o próximo. "
-                                                "Digite 'S' para continuar com o atendimento\n")
-                                    if(comparecimento=="S" or comparecimento=="s"):
-                                        paciente_em_antendimento_Dermatologia=listaEsperaPacienteComumDermatologia[0]
-                                        ultimo_paciente_chamado_dermatologia = paciente_em_antendimento_Dermatologia
-                                        hora_atendimento_Dermatologia=SolicitarHora()
-                                        minuto_atendimento_Dermatologia=SolicitarMinuto()
-                                        paciente_em_antendimento_Dermatologia.append(hora_atendimento_Dermatologia)
-                                        paciente_em_antendimento_Dermatologia.append(minuto_atendimento_Dermatologia)
-                                        listaEsperaPacienteComumDermatologia.pop(0)
-                                    elif(comparecimento=="n" or comparecimento=="N"):
-                                        dados_Pacientes, listaEsperaPacienteComumDermatologia = \
-                                            PularPaciente(dados_Pacientes,listaEsperaPacienteComumDermatologia[0][5],
-                                                          listaEsperaPacienteComumDermatologia)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    '''if((tamComumDermatologiaAtendido>=tamPrioritarioDermatologiaAtendido and listaEsperaPacientePrioritarioDermatologia) or
-                            (not listaEsperaPacienteComumDermatologia and listaEsperaPacientePrioritarioDermatologia)):
-                        print("Próxima senha do consultório de DERMATOLOGIA:")
-                        print(listaEsperaPacientePrioritarioDermatologia[0][5], "-", listaEsperaPacientePrioritarioDermatologia[0][1],
-                              "- Consultório de Dermatologia")
-
-                        while(comparecimento!="n" and comparecimento!="N" and comparecimento!="s" and comparecimento!="S"):
-                            comparecimento=input("O paciente compareceu? Digite 'N' para pular o paciente e chamar o proximo. "
-                                        "Digite 'S' para continuar com o atendimento\n")
-                            if(comparecimento=="S" or comparecimento=="s"):
-                                paciente_em_antendimento_Dermatologia=listaEsperaPacientePrioritarioDermatologia[0]
-                                hora_atendimento_Dermatologia=SolicitarHora()
-                                minuto_atendimento_Dermatologia=SolicitarMinuto()
-                                paciente_em_antendimento_Dermatologia.append(hora_atendimento_Dermatologia)
-                                paciente_em_antendimento_Dermatologia.append(minuto_atendimento_Dermatologia)
-                                listaEsperaPacientePrioritarioDermatologia.pop(0)
-                            elif(comparecimento=="n" or comparecimento=="N"):
-                                dados_Pacientes, listaEsperaPacientePrioritarioDermatologia=\
-                                    PularPaciente(dados_Pacientes, listaEsperaPacientePrioritarioDermatologia[0][5],
-                                                  listaEsperaPacientePrioritarioDermatologia)
-
-                    elif(listaEsperaPacienteComumDermatologia):
-                        print("Próxima senha do consultório de DERMATOLOGIA:")
-                        print(listaEsperaPacienteComumDermatologia[0][5], "-", listaEsperaPacienteComumDermatologia[0][1],
-                              "- Consultório de Dermatologia")
-                        while(comparecimento!="n" and comparecimento!="N" and comparecimento!="s" and comparecimento!="S"):
-                            comparecimento=input("O paciente compareceu? Digite 'N' para pular o paciente e chamar o próximo. "
-                                        "Digite 'S' para continuar com o atendimento\n")
-                            if(comparecimento=="S" or comparecimento=="s"):
-                                paciente_em_antendimento_Dermatologia=listaEsperaPacienteComumDermatologia[0]
-                                hora_atendimento_Dermatologia=SolicitarHora()
-                                minuto_atendimento_Dermatologia=SolicitarMinuto()
-                                paciente_em_antendimento_Dermatologia.append(hora_atendimento_Dermatologia)
-                                paciente_em_antendimento_Dermatologia.append(minuto_atendimento_Dermatologia)
-                                listaEsperaPacienteComumDermatologia.pop(0)
-                            elif(comparecimento=="n" or comparecimento=="N"):
-                                dados_Pacientes, listaEsperaPacienteComumDermatologia=\
-                                    PularPaciente(dados_Pacientes,listaEsperaPacienteComumDermatologia[0][5],
-                                                  listaEsperaPacienteComumDermatologia)'''
                 else:
                     print("Não há pacientes na lista de espera de dermatologia, ou já possui um paciente sendo atendido")
                     break
@@ -606,34 +418,35 @@ def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, pacient
         elif(opcao=="2"):
             while(comparecimento == "n" or comparecimento == "N"):
                 comparecimento=""
+                chama_comum = False
+                chama_preferencial = False
                 if(not paciente_em_antendimento_Endocrinologia and (listaEsperaPacienteComumEndocrinologia
                                                                     or listaEsperaPacientePrioritarioEndocrinologia)):
-                    '''if(not ultimo_paciente_chamado_dermatologia and listaEsperaPacientePrioritarioDermatologia):
-                        print("Chama prioritario")
+                    if(not ultimo_paciente_chamado_dermatologia and listaEsperaPacientePrioritarioDermatologia):
+                        chama_preferencial = True
                     elif(not ultimo_paciente_chamado_dermatologia and not listaEsperaPacientePrioritarioDermatologia
                          and listaEsperaPacienteComumDermatologia):
-                        print("Chama comum")
+                        chama_comum = True
                     elif(not listaEsperaPacientePrioritarioDermatologia and listaEsperaPacienteComumDermatologia):
-                        print("Chama comum")
+                        chama_comum = True
                     elif(not listaEsperaPacienteComumDermatologia and listaEsperaPacientePrioritarioDermatologia):
-                        print("Chama prioritario")
+                        chama_preferencial = True
                     elif(ultimo_paciente_chamado_dermatologia):
                         if(ultimo_paciente_chamado_dermatologia[0]=="c" or ultimo_paciente_chamado_dermatologia[0]=="C"):
                             if(listaEsperaPacientePrioritarioDermatologia):
-                                print("Chama prioritario")
+                                chama_preferencial = True
                             elif(listaEsperaPacienteComumDermatologia):
-                                print("Chama comum")
+                                chama_comum = True
                         elif(ultimo_paciente_chamado_dermatologia[0]=="p" or ultimo_paciente_chamado_dermatologia[0]=="P"):
                             if(listaEsperaPacientePrioritarioDermatologia):
                                 if(ordem_chegada_dermatologia[0][0]=="p" or ordem_chegada_dermatologia[0][0]=="P"):
-                                    print("Chama prioritario")
+                                    chama_preferencial = True
                                 elif(listaEsperaPacienteComumDermatologia):
-                                    print("Chama Comum")
+                                    chama_comum = True
                             elif(listaEsperaPacienteComumDermatologia):
-                                print("Chama comum")'''
+                                chama_comum = True
 
-                    if((tamComumEndocrinologiaAtendido >= tamPrioritarioEndocrinologiaAtendido and listaEsperaPacientePrioritarioEndocrinologia) or
-                            (not listaEsperaPacienteComumEndocrinologia and listaEsperaPacientePrioritarioEndocrinologia)):
+                    if(chama_preferencial):
                         print("Próxima senha do consultório de ENDOCRINOLOGIA:")
                         print(listaEsperaPacientePrioritarioEndocrinologia[0][5], "-" , listaEsperaPacientePrioritarioEndocrinologia[0][1],
                               "- Consultório de Endocrinologia")
@@ -651,7 +464,7 @@ def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, pacient
                                 dados_Pacientes, listaEsperaPacientePrioritarioEndocrinologia =\
                                     PularPaciente(dados_Pacientes, listaEsperaPacientePrioritarioEndocrinologia[0][5],
                                                   listaEsperaPacientePrioritarioEndocrinologia)
-                    elif(listaEsperaPacienteComumEndocrinologia):
+                    elif(chama_comum):
                         print("Próxima senha do consultório de ENDOCRINOLOGIA:")
                         print(listaEsperaPacienteComumEndocrinologia[0][5], "-", listaEsperaPacienteComumEndocrinologia[0][1],
                               "- Consultório de Endocrinologia")
@@ -676,11 +489,35 @@ def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, pacient
         elif(opcao=="3"):
             while(comparecimento=="n" or comparecimento=="N"):
                 comparecimento=""
+                chama_comum = False
+                chama_preferencial = False
                 if(not paciente_em_antendimento_Ortopedia and (listaEsperaPacienteComumOrtopedia
                         or listaEsperaPacientePrioritarioOrtopedia)):
+                    if(not ultimo_paciente_chamado_dermatologia and listaEsperaPacientePrioritarioDermatologia):
+                        chama_preferencial = True
+                    elif(not ultimo_paciente_chamado_dermatologia and not listaEsperaPacientePrioritarioDermatologia
+                         and listaEsperaPacienteComumDermatologia):
+                        chama_comum = True
+                    elif(not listaEsperaPacientePrioritarioDermatologia and listaEsperaPacienteComumDermatologia):
+                        chama_comum = True
+                    elif(not listaEsperaPacienteComumDermatologia and listaEsperaPacientePrioritarioDermatologia):
+                        chama_preferencial = True
+                    elif(ultimo_paciente_chamado_dermatologia):
+                        if(ultimo_paciente_chamado_dermatologia[0]=="c" or ultimo_paciente_chamado_dermatologia[0]=="C"):
+                            if(listaEsperaPacientePrioritarioDermatologia):
+                                chama_preferencial = True
+                            elif(listaEsperaPacienteComumDermatologia):
+                                chama_comum = True
+                        elif(ultimo_paciente_chamado_dermatologia[0]=="p" or ultimo_paciente_chamado_dermatologia[0]=="P"):
+                            if(listaEsperaPacientePrioritarioDermatologia):
+                                if(ordem_chegada_dermatologia[0][0]=="p" or ordem_chegada_dermatologia[0][0]=="P"):
+                                    chama_preferencial = True
+                                elif(listaEsperaPacienteComumDermatologia):
+                                    chama_comum = True
+                            elif(listaEsperaPacienteComumDermatologia):
+                                chama_comum = True
 
-                    if((tamComumOrtopediaAtendido >= tamPrioritarioOrtopediaAtendido and listaEsperaPacientePrioritarioOrtopedia) or
-                            (not listaEsperaPacienteComumOrtopedia and listaEsperaPacientePrioritarioOrtopedia)):
+                    if(chama_preferencial):
                         print("Próxima senha do consultório de ORTOPEDIA:")
                         print(listaEsperaPacientePrioritarioOrtopedia[0][5], "-", listaEsperaPacientePrioritarioOrtopedia[0][1],
                               "- Consultório de Ortopedia")
@@ -698,7 +535,7 @@ def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, pacient
                                 dados_Pacientes, listaEsperaPacientePrioritarioOrtopedia =\
                                     PularPaciente(dados_Pacientes, listaEsperaPacientePrioritarioOrtopedia[0][5],
                                                   listaEsperaPacientePrioritarioOrtopedia)
-                    elif(listaEsperaPacienteComumOrtopedia):
+                    elif(chama_comum):
                         print("Próxima senha do consultório de ORTOPEDIA:")
                         print(listaEsperaPacienteComumOrtopedia[0][5], "-", listaEsperaPacienteComumOrtopedia[0][1],
                               "- Consultório de Ortopedia")
@@ -728,7 +565,8 @@ def ChamarPacienteParaAtendimento(paciente_em_antendimento_Dermatologia, pacient
            listaEsperaPacientePrioritarioDermatologia, listaEsperaPacienteComumEndocrinologia, \
            listaEsperaPacientePrioritarioEndocrinologia, listaEsperaPacienteComumOrtopedia, \
            listaEsperaPacientePrioritarioOrtopedia, dados_Pacientes, ultimo_paciente_chamado_dermatologia, \
-           ultimo_paciente_chamado_endocrinologia, ultimo_paciente_chamado_ortopedia
+           ultimo_paciente_chamado_endocrinologia, ultimo_paciente_chamado_ortopedia, ordem_chegada_dermatologia, \
+           ordem_chegada_endocrinologia, ordem_chegada_ortopedia
 
 
 def PularPaciente(dados_Pacientes, excluir_Paciente, listaEspera):
