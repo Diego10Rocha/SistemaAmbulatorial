@@ -1,7 +1,7 @@
 '''
 Autor: Diego Rocha Cerqueira
 ComponenteCurricular: MI Algoritmos
-Concluido em:19/11/2019
+Concluido em:05/02/2020
 Declaro que este código foi elaborado por mim de forma individual e não contém nenhum
 trecho de código de outro colega ou de outro autor, tais como provindos de livros e
 apostilas, e páginas ou documentos eletrônicos da Internet. Qualquer trecho de código
@@ -115,10 +115,7 @@ while(opcao!=9):
                                                   paciente_em_atendimento_Ortopedia, listaEsperaPacienteComumDermatologia,
                                                   listaEsperaPacientePrioritarioDermatologia, listaEsperaPacienteComumEndocrinologia,
                                                   listaEsperaPacientePrioritarioEndocrinologia, listaEsperaPacienteComumOrtopedia,
-                                                  listaEsperaPacientePrioritarioOrtopedia, tamComumDermatologiaAtendido,
-                                                  tamComumEndocrinologiaAtendido, tamComumOrtopediaAtendido,
-                                                  tamPrioritarioDermatologiaAtendido, tamPrioritarioEndocrinologiaAtendido,
-                                                  tamPrioritarioOrtopediaAtendido, ultimo_paciente_chamado_dermatologia,
+                                                  listaEsperaPacientePrioritarioOrtopedia, ultimo_paciente_chamado_dermatologia,
                                                   ultimo_paciente_chamado_endocrinologia, ultimo_paciente_chamado_ortopedia,
                                                   ordem_chegada_dermatologia, ordem_chegada_endocrinologia,
                                                   ordem_chegada_ortopedia, dados_Pacientes))
@@ -161,18 +158,24 @@ while(opcao!=9):
             if(len(dados_Pacientes[excluir_Paciente])==6):
                 if(excluir_Paciente[0]=="c"):
                     if(excluir_Paciente[1]=="d"):
-                        dados_Pacientes, listaEsperaPacienteComumDermatologia=PularPaciente(dados_Pacientes, excluir_Paciente, listaEsperaPacienteComumDermatologia)
+                        dados_Pacientes, listaEsperaPacienteComumDermatologia, ordem_chegada_dermatologia=\
+                            PularPaciente(dados_Pacientes, excluir_Paciente, listaEsperaPacienteComumDermatologia, ordem_chegada_dermatologia)
                     elif(excluir_Paciente[1]=="e"):
-                        dados_Pacientes, listaEsperaPacienteComumEndocrinologia=PularPaciente(dados_Pacientes, excluir_Paciente, listaEsperaPacienteComumEndocrinologia)
+                        dados_Pacientes, listaEsperaPacienteComumEndocrinologia, ordem_chegada_endocrinologia=\
+                            PularPaciente(dados_Pacientes, excluir_Paciente, listaEsperaPacienteComumEndocrinologia, ordem_chegada_endocrinologia)
                     elif(excluir_Paciente[1]=="o"):
-                        dados_Pacientes, listaEsperaPacienteComumOrtopedia=PularPaciente(dados_Pacientes, excluir_Paciente, listaEsperaPacienteComumOrtopedia)
+                        dados_Pacientes, listaEsperaPacienteComumOrtopedia, ordem_chegada_ortopedia=\
+                            PularPaciente(dados_Pacientes, excluir_Paciente, listaEsperaPacienteComumOrtopedia, ordem_chegada_ortopedia)
                 else:
                     if(excluir_Paciente[1]=="d"):
-                        dados_Pacientes, listaEsperaPacientePrioritarioDermatologia=PularPaciente(dados_Pacientes, excluir_Paciente, listaEsperaPacientePrioritarioDermatologia)
+                        dados_Pacientes, listaEsperaPacientePrioritarioDermatologia, ordem_chegada_dermatologia=\
+                            PularPaciente(dados_Pacientes, excluir_Paciente, listaEsperaPacientePrioritarioDermatologia, ordem_chegada_dermatologia)
                     elif(excluir_Paciente[1]=="e"):
-                        dados_Pacientes, listaEsperaPacientePrioritarioEndocrinologia=PularPaciente(dados_Pacientes, excluir_Paciente, listaEsperaPacientePrioritarioEndocrinologia)
+                        dados_Pacientes, listaEsperaPacientePrioritarioEndocrinologia, ordem_chegada_endocrinologia=\
+                            PularPaciente(dados_Pacientes, excluir_Paciente, listaEsperaPacientePrioritarioEndocrinologia, ordem_chegada_endocrinologia)
                     elif(excluir_Paciente[1]=="o"):
-                        dados_Pacientes, listaEsperaPacientePrioritarioOrtopedia=PularPaciente(dados_Pacientes, excluir_Paciente, listaEsperaPacientePrioritarioOrtopedia)
+                        dados_Pacientes, listaEsperaPacientePrioritarioOrtopedia, ordem_chegada_ortopedia=\
+                            PularPaciente(dados_Pacientes, excluir_Paciente, listaEsperaPacientePrioritarioOrtopedia, ordem_chegada_ortopedia)
             else:
                 print("Impossível pular paciente pois ele não está na lista de espera")
 
