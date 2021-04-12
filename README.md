@@ -1,4 +1,5 @@
 #Sistema Ambulatorial
+
 Sistema desenvolvido na disciplina de MI - Algoritmos, do curso Engenharia da Computação da Universidade Estadual de Feira de Santana.
 
 Sistema ambulatorial para distribuição de senhas, organização de filas, geração de dados estatísticos sobre tempo de espera e atendimento.
